@@ -1,3 +1,4 @@
+const OsebergSorOperatorRunde = () => {
 const { useState } = React;
 
 const Button = ({ children, onClick, className }) => (
