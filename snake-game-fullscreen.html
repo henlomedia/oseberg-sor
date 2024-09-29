@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Spill med Nils</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        #gameCanvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const GRID_SIZE = 50; // Økt fra 40 til 50
+
+        let snake = [{x: GRID_SIZE, y: GRID_SIZE}];
+        let dx = GRID_SIZE;
+        let dy = 0;
+        let food = {x: 0, y: 0};
+        let score = 0;
+        let gameStarted = false;
+        let baconImage = new Image();
+        let snakeImage = new Image();
+        let gameSpeed = 180;
+
+        baconImage.src = 'bacon.png';
+        snakeImage.src = 'nils.png';
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function createFood() {
+            food.x = Math.floor(Math.random() * (canvas.width / GRID_SIZE)) * GRID_SIZE;
+            food.y = Math.floor(Math.random() * (canvas.height / GRID_SIZE)) * GRID_SIZE;
+            
+            if (food.x > canvas.width - GRID_SIZE) food.x -= GRID_SIZE;
+            if (food.y > canvas.height - GRID_SIZE) food.y -= GRID_SIZE;
+        }
+
+        function drawBacon(x, y) {
+            if (baconImage.complete && baconImage.naturalHeight !== 0) {
+                ctx.drawImage(baconImage, x, y, GRID_SIZE, GRID_SIZE);
+            } else {
+                ctx.fillStyle = '#FFA07A';
+                ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
+                ctx.strokeStyle = '#8B0000';
+                ctx.beginPath();
+                ctx.moveTo(x, y + GRID_SIZE * 0.3);
+                ctx.lineTo(x + GRID_SIZE, y + GRID_SIZE * 0.3);
+                ctx.moveTo(x, y + GRID_SIZE * 0.7);
+                ctx.lineTo(x + GRID_SIZE, y + GRID_SIZE * 0.7);
+                ctx.stroke();
+            }
+        }
+
+        function drawSnake() {
+            snake.forEach((segment) => {
+                if (snakeImage.complete && snakeImage.naturalHeight !== 0) {
+                    ctx.drawImage(snakeImage, segment.x, segment.y, GRID_SIZE, GRID_SIZE);
+                } else {
+                    ctx.fillStyle = '#008000';
+                    ctx.fillRect(segment.x, segment.y, GRID_SIZE, GRID_SIZE);
+                }
+            });
+        }
+
+        function moveSnake() {
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+            
+            if (head.x >= canvas.width) head.x = 0;
+            if (head.x < 0) head.x = canvas.width - GRID_SIZE;
+            if (head.y >= canvas.height) head.y = 0;
+            if (head.y < 0) head.y = canvas.height - GRID_SIZE;
+
+            // Sjekk kollisjon med seg selv
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    gameOver();
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                createFood();
+            } else {
+                snake.pop();
+            }
+        }
+
+        function gameOver() {
+            gameStarted = false;
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.font = '30px Arial';
+            ctx.fillText('Game Over!', canvas.width / 2 - 70, canvas.height / 2 - 15);
+            ctx.fillText(`Score: ${score}`, canvas.width / 2 - 50, canvas.height / 2 + 25);
+            ctx.font = '20px Arial';
+            ctx.fillText('Press Space to restart', canvas.width / 2 - 100, canvas.height / 2 + 60);
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (gameStarted) {
+                moveSnake();
+                drawSnake();
+                drawBacon(food.x, food.y);
+            }
+
+            ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Poeng: ${score}`, 10, 30);
+
+            if (!gameStarted) {
+                ctx.fillStyle = 'black';
+                ctx.font = '30px Arial';
+                ctx.fillText('Trykk mellomrom for å starte', canvas.width / 2 - 150, canvas.height / 2);
+            }
+
+            setTimeout(() => requestAnimationFrame(gameLoop), gameSpeed);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !gameStarted) {
+                snake = [{x: GRID_SIZE, y: GRID_SIZE}];
+                dx = GRID_SIZE;
+                dy = 0;
+                score = 0;
+                gameStarted = true;
+                createFood();
+            } else if (gameStarted) {
+                switch (e.code) {
+                    case 'ArrowUp':
+                        if (dy === 0) { dx = 0; dy = -GRID_SIZE; }
+                        break;
+                    case 'ArrowDown':
+                        if (dy === 0) { dx = 0; dy = GRID_SIZE; }
+                        break;
+                    case 'ArrowLeft':
+                        if (dx === 0) { dx = -GRID_SIZE; dy = 0; }
+                        break;
+                    case 'ArrowRight':
+                        if (dx === 0) { dx = GRID_SIZE; dy = 0; }
+                        break;
+                }
+            }
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>
