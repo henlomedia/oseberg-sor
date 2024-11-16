@@ -34,3 +34,11 @@ C22,Hovedkraft A/B,4,Lekkasjer i turbinhood(se fra vindu)
 C22,Hydrophoretank,1,Sjekk nivå, sjekk også tank på D24
 W21,Dieselpumper,1,Sjekk oljenivå
 W21,Brannkanoner,1,Sjekk at de står i riktig retning
+P12,Smøreolje,1,Sjekk nivå smøreoljeskidd
+P12,Filter,1,Lufte europafilter
+P12,Hydraulikk,1,Sjekk nivå starthydraulikk
+P12,Hydrosykloner,1,Tilbakespyle hydrosykloner
+P12,Scrubber,1,Sjekk nivå last chance scrubber
+P12,Kondensatpumper,1,Generell sjekk rundt kondensatpumpene
+P12,Stjerne-hydraulikk,1,Sjekk dP filtre, nivå og lekkasjer Stjerne-hydraulikk
+P12,J/K hydraulikk,1,Sjekk dP filtre, nivå og lekkasjer J/K hydraulikk
