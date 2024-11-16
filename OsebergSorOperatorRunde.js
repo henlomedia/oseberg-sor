@@ -1,16 +1,38 @@
+import React, { useState, useCallback, memo } from 'react';
+import { Alert } from '@/components/ui/alert';
+
+const Button = ({ children, onClick, className }) => (
+  <button 
+    onClick={onClick} 
+    className={`px-4 py-2 rounded ${className}`}
+  >
+    {children}
+  </button>
+);
+
+const Checkbox = ({ id, checked, onCheckedChange, label }) => (
+  <div className="flex items-center space-x-2">
+    <input
+      type="checkbox"
+      id={id}
+      checked={checked}
+      onChange={(e) => onCheckedChange(e.target.checked)}
+      className="h-4 w-4"
+    />
+    <label
+      htmlFor={id}
+      className={`${checked ? 'line-through text-gray-500' : ''}`}
+    >
+      {label}
+    </label>
+  </div>
+);
+
 const OsebergSorOperatorRunde = () => {
-  const { useState } = React;
-
-  const Button = ({ children, onClick, className }) => (
-    <button onClick={onClick} className={`px-4 py-2 rounded ${className}`}>{children}</button>
-  );
-
-  const Checkbox = ({ id, checked, onCheckedChange }) => (
-    <input type="checkbox" id={id} checked={checked} onChange={onCheckedChange} />
-  );
-
   const [currentScreen, setCurrentScreen] = useState('welcome');
   const [selectedArea, setSelectedArea] = useState(null);
+  const [error, setError] = useState(null);
+  
   const [tasks, setTasks] = useState({
     P23: {
       'Test Separator': [
@@ -48,7 +70,7 @@ const OsebergSorOperatorRunde = () => {
         { id: 1, description: 'Akkumulator nivåer og trykk', completed: false },
       ],
     },
- P21/Mezz: {
+    'P21/Mezz': {
       '1/2 trinn kompressor': [
         { id: 1, description: 'Syntetisk oljenivå', completed: false },
         { id: 2, description: 'Lekkasjer i turbinhood (Se fra vindu)', completed: false },
@@ -70,7 +92,7 @@ const OsebergSorOperatorRunde = () => {
         { id: 2, description: 'Sjekk funksjonalitet seglass ved behov', completed: false },
       ],
     },
- C22: {
+    C22: {
       'Rundown tanker Hovedkraft A/B': [
         { id: 1, description: 'Sjekk nivå', completed: false },
       ],
@@ -81,13 +103,13 @@ const OsebergSorOperatorRunde = () => {
         { id: 1, description: 'Lekkasjer under skjørt', completed: false },
         { id: 2, description: 'Syntetisk og mineralsk oljenivå', completed: false },
         { id: 3, description: 'Nivå rundown tanker generator', completed: false },
-        { id: 3, description: 'Lekkasjer i turbinhood(se fra vindu)', completed: false },
+        { id: 4, description: 'Lekkasjer i turbinhood(se fra vindu)', completed: false },
       ],
       'Hydrophoretank': [
         { id: 1, description: 'Sjekk nivå, sjekk også tank på D24', completed: false },
       ],
     },
- W21: {
+    W21: {
       'Dieselpumper': [
         { id: 1, description: 'Sjekk oljenivå', completed: false },
       ],
@@ -97,15 +119,23 @@ const OsebergSorOperatorRunde = () => {
     },
   });
 
-  const areasOppe = ['W21', 'P21/Mezz', 'C22', 'P22', 'P23/Mezz', 'Boligkvarter'];
+  const areasOppe = ['W21', 'P21/Mezz', 'C22', 'P22', 'P23', 'Boligkvarter'];
   const areasNede = ['P12', 'P11', 'W13', 'W12', 'W11', 'Z10', 'C12', 'C11'];
 
-  const selectArea = (area) => {
-    setSelectedArea(area);
-    setCurrentScreen('tasks');
-  };
+  const selectArea = useCallback((area) => {
+    try {
+      if (!tasks[area]) {
+        throw new Error(`Ingen oppgaver funnet for område ${area}`);
+      }
+      setSelectedArea(area);
+      setCurrentScreen('tasks');
+      setError(null);
+    } catch (err) {
+      setError(err.message || 'En feil har oppstått');
+    }
+  }, [tasks]);
 
-  const toggleTask = (area, category, id) => {
+  const toggleTask = useCallback((area, category, id) => {
     setTasks(prevTasks => ({
       ...prevTasks,
       [area]: {
@@ -115,9 +145,9 @@ const OsebergSorOperatorRunde = () => {
         ),
       },
     }));
-  };
+  }, []);
 
-  const resetTasks = (area) => {
+  const resetTasks = useCallback((area) => {
     setTasks(prevTasks => ({
       ...prevTasks,
       [area]: Object.fromEntries(
@@ -127,9 +157,9 @@ const OsebergSorOperatorRunde = () => {
         ])
       ),
     }));
-  };
+  }, []);
 
-  const resetAllTasks = () => {
+  const resetAllTasks = useCallback(() => {
     setTasks(prevTasks => {
       const resetTasks = {};
       for (const area in prevTasks) {
@@ -142,9 +172,9 @@ const OsebergSorOperatorRunde = () => {
       }
       return resetTasks;
     });
-  };
+  }, []);
 
-  const AreaButtons = ({ areas, color }) => (
+  const AreaButtons = memo(({ areas, color }) => (
     <div className="grid grid-cols-2 gap-2">
       {areas.map((area) => (
         <Button 
@@ -160,7 +190,7 @@ const OsebergSorOperatorRunde = () => {
         </Button>
       ))}
     </div>
-  );
+  ));
 
   const WelcomeScreen = () => (
     <div className="space-y-6">
@@ -182,50 +212,58 @@ const OsebergSorOperatorRunde = () => {
     </div>
   );
 
-  const TaskScreen = () => (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <Button onClick={() => setCurrentScreen('welcome')} className="bg-gray-200 hover:bg-gray-300 text-black">
-          Tilbake
-        </Button>
-        <h2 className="text-xl font-semibold">Oppgaver for {selectedArea}</h2>
-      </div>
-      {tasks[selectedArea] ? (
-        Object.entries(tasks[selectedArea]).map(([category, categoryTasks]) => (
+  const TaskScreen = () => {
+    if (!selectedArea || !tasks[selectedArea]) {
+      return <Alert variant="destructive">Ingen område valgt eller oppgaver funnet</Alert>;
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-4">
+          <Button 
+            onClick={() => setCurrentScreen('welcome')} 
+            className="bg-gray-200 hover:bg-gray-300 text-black"
+          >
+            Tilbake
+          </Button>
+          <h2 className="text-xl font-semibold">Oppgaver for {selectedArea}</h2>
+        </div>
+
+        {Object.entries(tasks[selectedArea]).map(([category, categoryTasks]) => (
           <div key={category} className="mb-4">
             <h3 className="text-lg font-semibold mb-2">{category}</h3>
             {categoryTasks.map(task => (
-              <div key={task.id} className="flex items-center space-x-2 mb-1">
-                <Checkbox
-                  id={`task-${selectedArea}-${category}-${task.id}`}
-                  checked={task.completed}
-                  onCheckedChange={() => toggleTask(selectedArea, category, task.id)}
-                />
-                <label
-                  htmlFor={`task-${selectedArea}-${category}-${task.id}`}
-                  className={`${task.completed ? 'line-through text-gray-500' : ''}`}
-                >
-                  {task.description}
-                </label>
-              </div>
+              <Checkbox
+                key={`${category}-${task.id}`}
+                id={`task-${selectedArea}-${category}-${task.id}`}
+                checked={task.completed}
+                onCheckedChange={() => toggleTask(selectedArea, category, task.id)}
+                label={task.description}
+              />
             ))}
           </div>
-        ))
-      ) : (
-        <p>Ingen oppgaver definert for dette området ennå.</p>
-      )}
-      <Button 
-        onClick={() => resetTasks(selectedArea)} 
-        className="w-full bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800 text-white"
-      >
-        Tilbakestill oppgaver for {selectedArea}
-      </Button>
-    </div>
-  );
+        ))}
+
+        <Button 
+          onClick={() => resetTasks(selectedArea)} 
+          className="w-full bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800 text-white"
+        >
+          Tilbakestill oppgaver for {selectedArea}
+        </Button>
+      </div>
+    );
+  };
 
   return (
     <div className="p-4 max-w-md mx-auto">
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          {error}
+        </Alert>
+      )}
       {currentScreen === 'welcome' ? <WelcomeScreen /> : <TaskScreen />}
     </div>
   );
 };
+
+export default OsebergSorOperatorRunde;
