@@ -1,0 +1,36 @@
+area,category,taskId,description
+P23,Test Separator,1,Sjekk olje og vann nivå
+P23,Test Separator,2,Sjekk funksjonalitet på seglass ved behov
+P23,Hydrophoretanker,1,Sjekk nivå
+P23,Gasskjølere,1,Sjekk posisjon på TVer. Reguler bypass ved behov
+P23,Gasskjølere,2,Sjekk avleiringshemmer mengde (natt)
+P23,Kjemikaliepumper/Tanker,1,Sjekk kjemikaliepumper for normal trykk og lyd. Pumper skal ikke "banke" mot intern sikkerhetsventil.
+P23,Kjemikaliepumper/Tanker,2,Sjekk nivå i kjemikalietanker
+P22,Rundown tanker,1,Sjekk nivå og overløp
+P22,Utsira tank,1,Sjekk nivå
+P22,Utsira tank,2,Sjekk funksjonalitet seglass ved behov
+P22,Dollinger,1,Sjekk dP filter
+P22,Dollinger,2,Sjekk vakuum
+P22,Emulsjonsbryter Subsea,1,Sjekk mengde
+P22,EV blowdown M,1,Akkumulator nivåer og trykk
+P21/Mezz,1/2 trinn kompressor,1,Syntetisk oljenivå
+P21/Mezz,1/2 trinn kompressor,2,Lekkasjer i turbinhood (Se fra vindu)
+P21/Mezz,1/2 trinn kompressor,3,dP/flow tettninger. Sjekk for lekkasjer i tettning/gass-skap
+P21/Mezz,1/2 trinn kompressor,4,Nivå scrubberer
+P21/Mezz,3-trinn kompressor,1,Sjekk dP/flow på tetninger
+P21/Mezz,3-trinn kompressor,2,Generell sjekk i tetning/gass-skap
+P21/Mezz,3-trinn kompressor,3,Sjekk smøreolje på el-motor
+P21/Mezz,3-trinn kompressor,4,Sjekk nivå på scrubber
+P21/Mezz,Fakkelgasskompressor,1,Sjekk oljenivå
+P21/Mezz,Fakkelgasskompressor,2,Sjekk for lekkasjer gjennom vindu
+P21/Mezz,Produksjonsseparator,1,Sjekk olje og vann-nivå
+P21/Mezz,Produksjonsseparator,2,Sjekk funksjonalitet seglass ved behov
+C22,Rundown tanker Hovedkraft A/B,1,Sjekk nivå
+C22,Starthydraulikk,1,Sjekk nivå og generell sjekk
+C22,Hovedkraft A/B,1,Lekkasjer under skjørt
+C22,Hovedkraft A/B,2,Syntetisk og mineralsk oljenivå
+C22,Hovedkraft A/B,3,Nivå rundown tanker generator
+C22,Hovedkraft A/B,4,Lekkasjer i turbinhood(se fra vindu)
+C22,Hydrophoretank,1,Sjekk nivå, sjekk også tank på D24
+W21,Dieselpumper,1,Sjekk oljenivå
+W21,Brannkanoner,1,Sjekk at de står i riktig retning
