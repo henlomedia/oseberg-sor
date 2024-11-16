@@ -48,6 +48,28 @@ const OsebergSorOperatorRunde = () => {
         { id: 1, description: 'Akkumulator nivåer og trykk', completed: false },
       ],
     },
+ P21: {
+      '1/2 trinn kompressor': [
+        { id: 1, description: 'Syntetisk oljenivå', completed: false },
+        { id: 2, description: 'Lekkasjer i turbinhood (Se fra vindu)', completed: false },
+        { id: 3, description: 'dP/flow tettninger. Sjekk for lekkasjer i tettning/gass-skap', completed: false },
+        { id: 4, description: 'Nivå scrubberer', completed: false },
+      ],
+      '3-trinn kompressor': [
+        { id: 1, description: 'Sjekk dP/flow på tetninger', completed: false },
+        { id: 2, description: 'Generell sjekk i tetning/gass-skap', completed: false },
+        { id: 3, description: 'Sjekk smøreolje på el-motor', completed: false },
+        { id: 4, description: 'Sjekk nivå på scrubber', completed: false },
+      ],
+      'Fakkelgasskompressor': [
+        { id: 1, description: 'Sjekk oljenivå', completed: false },
+        { id: 2, description: 'Sjekk for lekkasjer gjennom vindu', completed: false },
+      ],
+      'Produksjonsseparator': [
+        { id: 1, description: 'Sjekk olje og vann-nivå', completed: false },
+        { id: 2, description: 'Sjekk funksjonalitet seglass ved behov', completed: false },
+      ],
+    },
   });
 
   const areasOppe = ['P23', 'P22', 'P21', 'C22', 'C21', 'Mob båt dekk', 'W21', 'P21 Mess', 'P23 Mess', 'Boligkvarter'];
