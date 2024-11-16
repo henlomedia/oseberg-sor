@@ -87,6 +87,14 @@ const OsebergSorOperatorRunde = () => {
         { id: 1, description: 'Sjekk nivå, sjekk også tank på D24', completed: false },
       ],
     },
+ W21: {
+      'Dieselpumper': [
+        { id: 1, description: 'Sjekk oljenivå', completed: false },
+      ],
+      'Brannkanoner': [
+        { id: 1, description: 'Sjekk at de står i riktig retning', completed: false },
+      ],
+    },
   });
 
   const areasOppe = ['P23', 'P22', 'P21', 'C22', 'C21', 'Mob båt dekk', 'W21', 'P21 Mess', 'P23 Mess', 'Boligkvarter'];
