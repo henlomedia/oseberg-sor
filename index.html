@@ -12,18 +12,6 @@
         body { background-color: #f9fafb; }
         button { min-height: 44px; }
         input[type="checkbox"] { width: 1.2rem; height: 1.2rem; }
-        .loading {
-            border: 4px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 4px solid #3498db;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
@@ -50,87 +38,61 @@
                 }, label)
             );
 
-        const parseCSVData = (csvData) => {
-            const tasks = {};
-            csvData.forEach(row => {
-                if (!tasks[row.area]) {
-                    tasks[row.area] = {};
-                }
-                if (!tasks[row.area][row.category]) {
-                    tasks[row.area][row.category] = [];
-                }
-                tasks[row.area][row.category].push({
-                    id: parseInt(row.taskId),
-                    description: row.description,
-                    completed: false
-                });
-            });
-            return tasks;
-        };
-
         const App = () => {
+            // State
             const [tasks, setTasks] = React.useState(null);
-            const [loading, setLoading] = React.useState(true);
             const [currentScreen, setCurrentScreen] = React.useState('welcome');
             const [selectedArea, setSelectedArea] = React.useState(null);
-            const [error, setError] = React.useState(null);
 
+            // Last inn tasks fra CSV ved oppstart
             React.useEffect(() => {
-                // Først prøv å hente fra localStorage
+                // Først sjekk localStorage
                 const savedTasks = localStorage.getItem('osebergTasks');
-                const lastUpdated = localStorage.getItem('osebergTasksUpdated');
-                const now = new Date().getTime();
-                
-                // Hvis det er data i localStorage og det er mindre enn 24 timer siden sist oppdatering
-                if (savedTasks && lastUpdated && (now - parseInt(lastUpdated)) < 24 * 60 * 60 * 1000) {
+                if (savedTasks) {
                     setTasks(JSON.parse(savedTasks));
-                    setLoading(false);
-                } else {
-                    // Hvis ikke, last fra CSV
-                    fetch('tasks.csv')
-                        .then(response => response.text())
-                        .then(csv => {
-                            const results = Papa.parse(csv, {
-                                header: true,
-                                skipEmptyLines: true
-                            });
-                            const parsedTasks = parseCSVData(results.data);
-                            
-                            // Behold completed status fra localStorage hvis det finnes
-                            if (savedTasks) {
-                                const oldTasks = JSON.parse(savedTasks);
-                                Object.keys(parsedTasks).forEach(area => {
-                                    Object.keys(parsedTasks[area]).forEach(category => {
-                                        parsedTasks[area][category].forEach(task => {
-                                            const oldTask = oldTasks[area]?.[category]?.find(t => t.id === task.id);
-                                            if (oldTask) {
-                                                task.completed = oldTask.completed;
-                                            }
-                                        });
-                                    });
-                                });
-                            }
-                            
-                            setTasks(parsedTasks);
-                            localStorage.setItem('osebergTasks', JSON.stringify(parsedTasks));
-                            localStorage.setItem('osebergTasksUpdated', now.toString());
-                            setLoading(false);
-                        })
-                        .catch(err => {
-                            setError('Kunne ikke laste oppgaver: ' + err.message);
-                            setLoading(false);
-                        });
+                    return;
                 }
+
+                // Hvis ingen data i localStorage, last fra CSV
+                fetch('tasks.csv')
+                    .then(response => response.text())
+                    .then(csv => {
+                        const results = Papa.parse(csv, {
+                            header: true,
+                            skipEmptyLines: true
+                        });
+                        
+                        // Organiser data
+                        const parsedTasks = {};
+                        results.data.forEach(row => {
+                            if (!parsedTasks[row.area]) {
+                                parsedTasks[row.area] = {};
+                            }
+                            if (!parsedTasks[row.area][row.category]) {
+                                parsedTasks[row.area][row.category] = [];
+                            }
+                            parsedTasks[row.area][row.category].push({
+                                id: parseInt(row.taskId),
+                                description: row.description,
+                                completed: false
+                            });
+                        });
+
+                        setTasks(parsedTasks);
+                        localStorage.setItem('osebergTasks', JSON.stringify(parsedTasks));
+                    });
             }, []);
 
             const areasOppe = ['W21', 'P21/Mezz', 'C22', 'P22', 'P23', 'Boligkvarter'];
             const areasNede = ['P12', 'P11', 'W13', 'W12', 'W11', 'Z10', 'C12', 'C11'];
 
+            // Funksjon for å håndtere område-valg
             const selectArea = (area) => {
                 setSelectedArea(area);
                 setCurrentScreen('tasks');
             };
 
+            // Funksjon for å toggle oppgaver
             const toggleTask = (area, category, id) => {
                 const newTasks = {
                     ...tasks,
@@ -145,6 +107,7 @@
                 localStorage.setItem('osebergTasks', JSON.stringify(newTasks));
             };
 
+            // Funksjon for å tilbakestille oppgaver
             const resetTasks = (area) => {
                 const newTasks = {
                     ...tasks,
@@ -159,7 +122,10 @@
                 localStorage.setItem('osebergTasks', JSON.stringify(newTasks));
             };
 
+            // Funksjon for å tilbakestille alle oppgaver
             const resetAllTasks = () => {
+                if (!tasks) return;
+                
                 const newTasks = Object.fromEntries(
                     Object.entries(tasks).map(([area, areaTasks]) => [
                         area,
@@ -175,32 +141,20 @@
                 localStorage.setItem('osebergTasks', JSON.stringify(newTasks));
             };
 
-            if (loading) {
+            // Hvis data ikke er lastet ennå
+            if (!tasks) {
                 return React.createElement('div', { 
                     className: 'flex items-center justify-center min-h-screen' 
-                }, 
-                    React.createElement('div', { className: 'loading' })
-                );
+                }, 'Laster...');
             }
 
-            if (error) {
-                return React.createElement('div', {
-                    className: 'p-4 max-w-md mx-auto'
-                },
-                    React.createElement('div', {
-                        className: 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4'
-                    }, error)
-                );
-            }
-
+            // Welcome screen
             if (currentScreen === 'welcome') {
                 return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
                     React.createElement('div', { className: 'space-y-6' },
                         React.createElement('h1', { className: 'text-2xl font-bold' }, 'Oseberg Sør'),
                         React.createElement('div', { className: 'p-4 bg-blue-100 rounded-lg' },
-                            React.createElement('h2', { 
-                                className: 'text-xl font-semibold mb-2 text-blue-800' 
-                            }, 'Operatørrunde Oppe'),
+                            React.createElement('h2', { className: 'text-xl font-semibold mb-2 text-blue-800' }, 'Operatørrunde Oppe'),
                             React.createElement('div', { className: 'grid grid-cols-2 gap-2' },
                                 ...areasOppe.map(area =>
                                     React.createElement(Button, {
@@ -212,9 +166,7 @@
                             )
                         ),
                         React.createElement('div', { className: 'p-4 bg-green-100 rounded-lg' },
-                            React.createElement('h2', { 
-                                className: 'text-xl font-semibold mb-2 text-green-800' 
-                            }, 'Operatørrunde Nede'),
+                            React.createElement('h2', { className: 'text-xl font-semibold mb-2 text-green-800' }, 'Operatørrunde Nede'),
                             React.createElement('div', { className: 'grid grid-cols-2 gap-2' },
                                 ...areasNede.map(area =>
                                     React.createElement(Button, {
@@ -233,6 +185,7 @@
                 );
             }
 
+            // Tasks screen
             return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
                 React.createElement('div', { className: 'space-y-4' },
                     React.createElement('div', { className: 'flex items-center justify-between' },
@@ -240,18 +193,13 @@
                             onClick: () => setCurrentScreen('welcome'),
                             className: 'bg-gray-500 hover:bg-gray-600'
                         }, 'Tilbake'),
-                        React.createElement('h2', { 
-                            className: 'text-xl font-semibold' 
-                        }, `Oppgaver for ${selectedArea}`)
+                        React.createElement('h2', { className: 'text-xl font-semibold' }, 
+                            `Oppgaver for ${selectedArea}`
+                        )
                     ),
                     tasks[selectedArea] && Object.entries(tasks[selectedArea]).map(([category, categoryTasks]) =>
-                        React.createElement('div', { 
-                            key: category, 
-                            className: 'bg-white rounded-lg p-4 shadow' 
-                        },
-                            React.createElement('h3', { 
-                                className: 'text-lg font-semibold mb-2' 
-                            }, category),
+                        React.createElement('div', { key: category, className: 'bg-white rounded-lg p-4 shadow' },
+                            React.createElement('h3', { className: 'text-lg font-semibold mb-2' }, category),
                             categoryTasks.map(task =>
                                 React.createElement(Checkbox, {
                                     key: task.id,
@@ -259,12 +207,13 @@
                                     checked: task.completed,
                                     onChange: () => toggleTask(selectedArea, category, task.id),
                                     label: task.description
-                                    ))
+                                })
+                            )
                         )
                     ),
                     React.createElement(Button, {
                         onClick: () => resetTasks(selectedArea),
-                        className: 'w-full bg-yellow-600 hover:bg-yellow-700 mt-4'
+                        className: 'w-full bg-yellow-600 hover:bg-yellow-700'
                     }, `Tilbakestill oppgaver for ${selectedArea}`)
                 )
             );
