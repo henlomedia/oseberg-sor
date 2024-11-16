@@ -48,7 +48,7 @@ const OsebergSorOperatorRunde = () => {
         { id: 1, description: 'Akkumulator nivåer og trykk', completed: false },
       ],
     },
- P21: {
+ P21/Mezz: {
       '1/2 trinn kompressor': [
         { id: 1, description: 'Syntetisk oljenivå', completed: false },
         { id: 2, description: 'Lekkasjer i turbinhood (Se fra vindu)', completed: false },
