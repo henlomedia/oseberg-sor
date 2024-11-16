@@ -1,7 +1,4 @@
-import React from 'react';
-import { Alert } from '@/components/ui/alert';
-
-export default function OsebergSorOperatorRunde() {
+const OsebergSorOperatorRunde = () => {
   const [currentScreen, setCurrentScreen] = React.useState('welcome');
   const [selectedArea, setSelectedArea] = React.useState(null);
   const [error, setError] = React.useState(null);
@@ -95,38 +92,30 @@ export default function OsebergSorOperatorRunde() {
   const areasOppe = ['W21', 'P21/Mezz', 'C22', 'P22', 'P23', 'Boligkvarter'];
   const areasNede = ['P12', 'P11', 'W13', 'W12', 'W11', 'Z10', 'C12', 'C11'];
 
-  function Button({ children, onClick, className }) {
-    return (
-      <button 
-        onClick={onClick} 
-        className={`px-4 py-2 rounded ${className}`}
-      >
-        {children}
-      </button>
-    );
-  }
+  const Button = ({ children, onClick, className }) => (
+    React.createElement('button', {
+      onClick: onClick,
+      className: `px-4 py-2 rounded ${className}`,
+    }, children)
+  );
 
-  function Checkbox({ id, checked, onCheckedChange, label }) {
-    return (
-      <div className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          id={id}
-          checked={checked}
-          onChange={(e) => onCheckedChange(e.target.checked)}
-          className="h-4 w-4"
-        />
-        <label
-          htmlFor={id}
-          className={`${checked ? 'line-through text-gray-500' : ''}`}
-        >
-          {label}
-        </label>
-      </div>
-    );
-  }
+  const Checkbox = ({ id, checked, onCheckedChange, label }) => (
+    React.createElement('div', { className: 'flex items-center space-x-2' },
+      React.createElement('input', {
+        type: 'checkbox',
+        id: id,
+        checked: checked,
+        onChange: (e) => onCheckedChange(e.target.checked),
+        className: 'h-4 w-4',
+      }),
+      React.createElement('label', {
+        htmlFor: id,
+        className: checked ? 'line-through text-gray-500' : '',
+      }, label)
+    )
+  );
 
-  function selectArea(area) {
+  const selectArea = (area) => {
     try {
       if (!tasks[area]) {
         throw new Error(`Ingen oppgaver funnet for område ${area}`);
@@ -137,9 +126,9 @@ export default function OsebergSorOperatorRunde() {
     } catch (err) {
       setError(err.message || 'En feil har oppstått');
     }
-  }
+  };
 
-  function toggleTask(area, category, id) {
+  const toggleTask = (area, category, id) => {
     setTasks(prevTasks => ({
       ...prevTasks,
       [area]: {
@@ -149,9 +138,9 @@ export default function OsebergSorOperatorRunde() {
         ),
       },
     }));
-  }
+  };
 
-  function resetTasks(area) {
+  const resetTasks = (area) => {
     setTasks(prevTasks => ({
       ...prevTasks,
       [area]: Object.fromEntries(
@@ -161,9 +150,9 @@ export default function OsebergSorOperatorRunde() {
         ])
       ),
     }));
-  }
+  };
 
-  function resetAllTasks() {
+  const resetAllTasks = () => {
     setTasks(prevTasks => {
       const resetTasks = {};
       for (const area in prevTasks) {
@@ -176,100 +165,82 @@ export default function OsebergSorOperatorRunde() {
       }
       return resetTasks;
     });
-  }
+  };
 
-  function AreaButtons({ areas, color }) {
-    return (
-      <div className="grid grid-cols-2 gap-2">
-        {areas.map((area) => (
-          <Button 
-            key={area} 
-            onClick={() => selectArea(area)} 
-            className={`w-full ${
-              color === 'blue' 
-                ? 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800' 
-                : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
-            } text-white`}
-          >
-            {area}
-          </Button>
-        ))}
-      </div>
-    );
-  }
+  const AreaButtons = ({ areas, color }) => (
+    React.createElement('div', { className: 'grid grid-cols-2 gap-2' },
+      areas.map((area) => (
+        React.createElement(Button, {
+          key: area,
+          onClick: () => selectArea(area),
+          className: `w-full ${
+            color === 'blue'
+              ? 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
+              : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
+          } text-white`,
+        }, area)
+      ))
+    )
+  );
 
-  function WelcomeScreen() {
-    return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Oseberg Sør</h1>
-        <div className="p-4 bg-blue-100 rounded-lg">
-          <h2 className="text-xl font-semibold mb-2 text-blue-800">Operatørrunde Oppe</h2>
-          <AreaButtons areas={areasOppe} color="blue" />
-        </div>
-        <div className="p-4 bg-green-100 rounded-lg">
-          <h2 className="text-xl font-semibold mb-2 text-green-800">Operatørrunde Nede</h2>
-          <AreaButtons areas={areasNede} color="green" />
-        </div>
-        <Button 
-          onClick={resetAllTasks} 
-          className="w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white"
-        >
-          Tilbakestill alle oppgaver
-        </Button>
-      </div>
-    );
-  }
+  const WelcomeScreen = () => (
+    React.createElement('div', { className: 'space-y-6' },
+      React.createElement('h1', { className: 'text-2xl font-bold' }, 'Oseberg Sør'),
+      React.createElement('div', { className: 'p-4 bg-blue-100 rounded-lg' },
+        React.createElement('h2', { className: 'text-xl font-semibold mb-2 text-blue-800' }, 'Operatørrunde Oppe'),
+        React.createElement(AreaButtons, { areas: areasOppe, color: 'blue' })
+      ),
+      React.createElement('div', { className: 'p-4 bg-green-100 rounded-lg' },
+        React.createElement('h2', { className: 'text-xl font-semibold mb-2 text-green-800' }, 'Operatørrunde Nede'),
+        React.createElement(AreaButtons, { areas: areasNede, color: 'green' })
+      ),
+      React.createElement(Button, {
+        onClick: resetAllTasks,
+        className: 'w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white',
+      }, 'Tilbakestill alle oppgaver')
+    )
+  );
 
-  function TaskScreen() {
+  const TaskScreen = () => {
     if (!selectedArea || !tasks[selectedArea]) {
-      return <Alert variant="destructive">Ingen område valgt eller oppgaver funnet</Alert>;
+      return React.createElement('div', { className: 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4' },
+        'Ingen område valgt eller oppgaver funnet'
+      );
     }
 
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between mb-4">
-          <Button 
-            onClick={() => setCurrentScreen('welcome')} 
-            className="bg-gray-200 hover:bg-gray-300 text-black"
-          >
-            Tilbake
-          </Button>
-          <h2 className="text-xl font-semibold">Oppgaver for {selectedArea}</h2>
-        </div>
-
-        {Object.entries(tasks[selectedArea]).map(([category, categoryTasks]) => (
-          <div key={category} className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">{category}</h3>
-            {categoryTasks.map(task => (
-              <Checkbox
-                key={`${category}-${task.id}`}
-                id={`task-${selectedArea}-${category}-${task.id}`}
-                checked={task.completed}
-                onCheckedChange={() => toggleTask(selectedArea, category, task.id)}
-                label={task.description}
-              />
-            ))}
-          </div>
-        ))}
-
-        <Button 
-          onClick={() => resetTasks(selectedArea)} 
-          className="w-full bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800 text-white"
-        >
-          Tilbakestill oppgaver for {selectedArea}
-        </Button>
-      </div>
+    return React.createElement('div', { className: 'space-y-4' },
+      React.createElement('div', { className: 'flex items-center justify-between mb-4' },
+        React.createElement(Button, {
+          onClick: () => setCurrentScreen('welcome'),
+          className: 'bg-gray-200 hover:bg-gray-300 text-black',
+        }, 'Tilbake'),
+        React.createElement('h2', { className: 'text-xl font-semibold' }, `Oppgaver for ${selectedArea}`)
+      ),
+      ...Object.entries(tasks[selectedArea]).map(([category, categoryTasks]) => (
+        React.createElement('div', { key: category, className: 'mb-4' },
+          React.createElement('h3', { className: 'text-lg font-semibold mb-2' }, category),
+          categoryTasks.map(task => (
+            React.createElement(Checkbox, {
+              key: `${category}-${task.id}`,
+              id: `task-${selectedArea}-${category}-${task.id}`,
+              checked: task.completed,
+              onCheckedChange: () => toggleTask(selectedArea, category, task.id),
+              label: task.description,
+            })
+          ))
+        )
+      )),
+      React.createElement(Button, {
+        onClick: () => resetTasks(selectedArea),
+        className: 'w-full bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800 text-white',
+      }, `Tilbakestill oppgaver for ${selectedArea}`)
     );
-  }
+  };
 
-  return (
-    <div className="p-4 max-w-md mx-auto">
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          {error}
-        </Alert>
-      )}
-      {currentScreen === 'welcome' ? <WelcomeScreen /> : <TaskScreen />}
-    </div>
+  return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
+    error && React.createElement('div', { 
+      className: 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4' 
+    }, error),
+    currentScreen === 'welcome' ? React.createElement(WelcomeScreen) : React.createElement(TaskScreen)
   );
-}
+};
