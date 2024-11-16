@@ -1,44 +1,92 @@
-area,category,taskId,description
-P23/Mezz,Test Separator,1,Sjekk olje og vann nivå
-P23/Mezz,Test Separator,2,Sjekk funksjonalitet på seglass ved behov
-P23/Mezz,Hydrophoretanker,1,Sjekk nivå
-P23/Mezz,Gasskjølere,1,Sjekk posisjon på TVer. Reguler bypass ved behov
-P23/Mezz,Gasskjølere,2,Sjekk avleiringshemmer mengde (natt)
-P23/Mezz,Kjemikaliepumper/Tanker,1,Sjekk kjemikaliepumper for normal trykk og lyd. Pumper skal ikke "banke" mot intern sikkerhetsventil.
-P23/Mezz,Kjemikaliepumper/Tanker,2,Sjekk nivå i kjemikalietanker
-P22,Rundown tanker,1,Sjekk nivå og overløp
-P22,Utsira tank,1,Sjekk nivå
-P22,Utsira tank,2,Sjekk funksjonalitet seglass ved behov
-P22,Dollinger,1,Sjekk dP filter
-P22,Dollinger,2,Sjekk vakuum
-P22,Emulsjonsbryter Subsea,1,Sjekk mengde
-P22,EV blowdown M,1,Akkumulator nivåer og trykk
-P21/Mezz,1/2 trinn kompressor,1,Syntetisk oljenivå
-P21/Mezz,1/2 trinn kompressor,2,Lekkasjer i turbinhood (Se fra vindu)
-P21/Mezz,1/2 trinn kompressor,3,dP/flow tettninger. Sjekk for lekkasjer i tettning/gass-skap
-P21/Mezz,1/2 trinn kompressor,4,Nivå scrubberer
-P21/Mezz,3-trinn kompressor,1,Sjekk dP/flow på tetninger
-P21/Mezz,3-trinn kompressor,2,Generell sjekk i tetning/gass-skap
-P21/Mezz,3-trinn kompressor,3,Sjekk smøreolje på el-motor
-P21/Mezz,3-trinn kompressor,4,Sjekk nivå på scrubber
-P21/Mezz,Fakkelgasskompressor,1,Sjekk oljenivå
-P21/Mezz,Fakkelgasskompressor,2,Sjekk for lekkasjer gjennom vindu
-P21/Mezz,Produksjonsseparator,1,Sjekk olje og vann-nivå
-P21/Mezz,Produksjonsseparator,2,Sjekk funksjonalitet seglass ved behov
-C22,Rundown tanker Hovedkraft A/B,1,Sjekk nivå
-C22,Starthydraulikk,1,Sjekk nivå og generell sjekk
-C22,Hovedkraft A/B,1,Lekkasjer under skjørt
-C22,Hovedkraft A/B,2,Syntetisk og mineralsk oljenivå
-C22,Hovedkraft A/B,3,Nivå rundown tanker generator
-C22,Hovedkraft A/B,4,Lekkasjer i turbinhood(se fra vindu)
-C22,Hydrophoretank,1,Sjekk nivå, sjekk også tank på D24
-W21,Dieselpumper,1,Sjekk oljenivå
-W21,Brannkanoner,1,Sjekk at de står i riktig retning
-P12,Smøreolje,1,Sjekk nivå smøreoljeskidd
-P12,Filter,1,Lufte europafilter
-P12,Hydraulikk,1,Sjekk nivå starthydraulikk
-P12,Hydrosykloner,1,Tilbakespyle hydrosykloner
-P12,Scrubber,1,Sjekk nivå last chance scrubber
-P12,Kondensatpumper,1,Generell sjekk rundt kondensatpumpene
-P12,Stjerne-hydraulikk,1,Sjekk dP filtre, nivå og lekkasjer Stjerne-hydraulikk
-P12,J/K hydraulikk,1,Sjekk dP filtre, nivå og lekkasjer J/K hydraulikk
+area;category;taskId;description
+P23/Mezz;Test Separator;1;Sjekk olje og vann nivå
+P23/Mezz;Test Separator;2;Sjekk funksjonalitet på seglass ved behov
+P23/Mezz;Hydrophoretanker;1;Sjekk nivå
+P23/Mezz;Gasskjølere;1;Sjekk posisjon på TVer. Reguler bypass ved behov
+P23/Mezz;Gasskjølere;2;Sjekk avleiringshemmer mengde (natt)
+P23/Mezz;Kjemikaliepumper/Tanker;1;"Sjekk kjemikaliepumper for normal trykk og lyd. Pumper skal ikke ""banke"" mot intern sikkerhetsventil."
+P23/Mezz;Kjemikaliepumper/Tanker;2;Sjekk nivå i kjemikalietanker
+P22;Rundown tanker;1;Sjekk nivå og overløp
+P22;Utsira tank;1;Sjekk nivå
+P22;Utsira tank;2;Sjekk funksjonalitet seglass ved behov
+P22;Dollinger;1;Sjekk dP filter
+P22;Dollinger;2;Sjekk vakuum
+P22;Emulsjonsbryter Subsea;1;Sjekk mengde
+P22;EV blowdown M;1;Akkumulator nivåer og trykk
+P21/Mezz;1/2 trinn kompressor;1;Syntetisk oljenivå
+P21/Mezz;1/2 trinn kompressor;2;Lekkasjer i turbinhood (Se fra vindu)
+P21/Mezz;1/2 trinn kompressor;3;dP/flow tettninger. Sjekk for lekkasjer i tettning/gass-skap
+P21/Mezz;1/2 trinn kompressor;4;Nivå scrubberer
+P21/Mezz;3-trinn kompressor;1;Sjekk dP/flow på tetninger
+P21/Mezz;3-trinn kompressor;2;Generell sjekk i tetning/gass-skap
+P21/Mezz;3-trinn kompressor;3;Sjekk smøreolje på el-motor
+P21/Mezz;3-trinn kompressor;4;Sjekk nivå på scrubber
+P21/Mezz;Fakkelgasskompressor;1;Sjekk oljenivå
+P21/Mezz;Fakkelgasskompressor;2;Sjekk for lekkasjer gjennom vindu
+P21/Mezz;Produksjonsseparator;1;Sjekk olje og vann-nivå
+P21/Mezz;Produksjonsseparator;2;Sjekk funksjonalitet seglass ved behov
+C22;Rundown tanker Hovedkraft A/B;1;Sjekk nivå
+C22;Starthydraulikk;1;Sjekk nivå og generell sjekk
+C22;Hovedkraft A/B;1;Lekkasjer under skjørt
+C22;Hovedkraft A/B;2;Syntetisk og mineralsk oljenivå
+C22;Hovedkraft A/B;3;Nivå rundown tanker generator
+C22;Hovedkraft A/B;4;Lekkasjer i turbinhood(se fra vindu)
+C22;Hydrophoretank;1;Sjekk nivå.  Sjekk også tank på D24
+W21;Dieselpumper;1;Sjekk oljenivå
+W21;Brannkanoner;1;Sjekk at de står i riktig retning
+P12;Smøreolje;1;Sjekk nivå smøreoljeskidd
+P12;Filter;1;Lufte europafilter
+P12;Hydraulikk;1;Sjekk nivå starthydraulikk
+P12;Hydrosykloner;1;Tilbakespyle hydrosykloner
+P12;Scrubber;1;Sjekk nivå last chance scrubber
+P12;Kondensatpumper;1;Generell sjekk rundt kondensatpumpene
+P12;Stjerne-hydraulikk;1;Sjekk dP filtre, nivå og lekkasjer Stjerne-hydraulikk
+P12;J/K hydraulikk;1;Sjekk dP filtre,  nivå og lekkasjer J/K hydraulikk
+Boligkvarter;6. Etasje;1;Sjekk varmtvannsbereder, vifter og kjøleanlegg
+Boligkvarter;1. Etasje;1;Sjekk vifter og spjeld
+C11;Lufttank;1;Bunnblåse/Sjekk for vann
+C11;Sjøvannspumper ;1;Sjekk oljenivå 
+C11;Luftkompressor ;1;Sjekk olje
+C11;Luftkompressor ;2;Sjekk kjølevæskenivå
+C11;Luftkompressor ;3;Sjekk kondenspotter funksjon
+C11;Nødgeneratorer ;1;Dieselnivå
+C11;Nødgeneratorer ;2;Ekspansjonstank nivå
+C11;Nødgeneratorer ;3;Sirkulasjonspumpe
+C11;Nødgeneratorer ;4;Smøreolje nivå og forsmøring
+C11;Nødgeneratorer ;5;Startlufttanker trykk og bunndrenering
+C11;HVAC ;1;Sjekk dP innløpsfilter
+C11;HVAC ;2;Sjekk dP kjølevæskepumper 
+C12;EVA rom ;1;Sjekk nivåer, temperatur og trykk evaporatorer
+C12;EVA rom ;2;Sjekk avleiringshemmer og vannglass nivåer og dosering 
+C12;EVA rom ;3;Sjekk UV pakke 
+C12;RF1;1;Nivå og trykk 
+Z10;IV paneler M;1;Sjekk hydraulikktrykk for termisk ekspansjon
+Z10;EV ventiler;1;Sjekk akkumulator nivåer
+W11;Produksjonskjemikalier;1;Sjekk avleiringshemmer
+W11;Produksjonskjemikalier;2;Sjekk korrosjonshemmer subsea 
+W11;Brønnhydraulikk;1;Oljenivå tank
+W11;Brønnhydraulikk;2;Akkumulator nivåer
+W11;Brønnhydraulikk;3;dP over tur og retur filter
+W11;Brønnhydraulikk;4;Europafilter pakke
+W12;Olje choker;1;Sladreplugg primærtettning
+W12;Gass choker/ GL;1;Sladreplugg primærtettning
+W12;Vanninjeksjons choker;1;Sladreplugg primærtettning
+W12;Utsirabrønner;1;Avleiringshemmer mengde
+W13;Produksjonskjemikalier ;1;Avleiringshemmer mengde
+W13;Produksjonskjemikalier ;1;Emulsjonsbryter, mengde
+W13;Brønner;1;Generell sjekk
+W13;CAC;1;Sjekk for lekkasjer
+P11/Mezz;Oljeeksportpumper;1;Oljenivå på el.motor og pumper
+P11/Mezz;Oljeeksportpumper;2;Sjekk sperrevæske nivå og trykk 
+P11/Mezz;Vanninjeksjonspumper;1;Sjekk oljenivå på el.motor og pumper
+P11/Mezz;Vanninjeksjonspumper;2;Sjekk sperrevæske nivå/trykk
+P11/Mezz;Boosterpumper ;1;Sjekk oljenivå
+P11/Mezz;Boosterpumper ;2;Sjekk sperrevæske trykk
+P11/Mezz;Platformhydraulikk;1;Sjekk oljenivå tank
+P11/Mezz;Platformhydraulikk;2;Sjekk akkumulator nivåer
+P11/Mezz;Platformhydraulikk;3;Sjekk dP over tur og retur filter
+P11/Mezz;Platformhydraulikk;4;Sjekk europafilter pakke
+P11/Mezz;Fakkeldunk;1;Sjekk nivå
+P11/Mezz;Spillolje, Haz og subsea pumper ;1;Generell sjekk
+P11/Mezz;Brenngass scrubber;1;Sjekk nivå
+P11/Mezz;Metanolskidd;1;Generell sjekk
