@@ -70,6 +70,23 @@ const OsebergSorOperatorRunde = () => {
         { id: 2, description: 'Sjekk funksjonalitet seglass ved behov', completed: false },
       ],
     },
+ C22: {
+      'Rundown tanker Hovedkraft A/B': [
+        { id: 1, description: 'Sjekk nivå', completed: false },
+      ],
+      'Starthydraulikk': [
+        { id: 1, description: 'Sjekk nivå og generell sjekk', completed: false },
+      ],
+      'Hovedkraft A/B': [
+        { id: 1, description: 'Lekkasjer under skjørt', completed: false },
+        { id: 2, description: 'Syntetisk og mineralsk oljenivå', completed: false },
+        { id: 3, description: 'Nivå rundown tanker generator', completed: false },
+        { id: 3, description: 'Lekkasjer i turbinhood(se fra vindu)', completed: false },
+      ],
+      'Hydrophoretank': [
+        { id: 1, description: 'Sjekk nivå, sjekk også tank på D24', completed: false },
+      ],
+    },
   });
 
   const areasOppe = ['P23', 'P22', 'P21', 'C22', 'C21', 'Mob båt dekk', 'W21', 'P21 Mess', 'P23 Mess', 'Boligkvarter'];
