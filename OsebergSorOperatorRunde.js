@@ -97,7 +97,7 @@ const OsebergSorOperatorRunde = () => {
     },
   });
 
-  const areasOppe = ['P23', 'P22', 'P21', 'C22', 'C21', 'Mob båt dekk', 'W21', 'P21 Mess', 'P23 Mess', 'Boligkvarter'];
+  const areasOppe = ['W21', 'P21/Mezz', 'C22', 'P22', 'P23/Mezz', 'Boligkvarter'];
   const areasNede = ['P12', 'P11', 'W13', 'W12', 'W11', 'Z10', 'C12', 'C11'];
 
   const selectArea = (area) => {
