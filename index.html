@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Operatørrunde</title>
     <meta name="apple-mobile-web-app-title" content="Operatørrunde">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
@@ -12,12 +14,29 @@
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Prevent text size adjustment after orientation changes in iOS */
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+        /* Better touch targeting */
+        input, button {
+            min-height: 44px;
+        }
+        /* Remove tap highlight on iOS */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50">
     <div id="root"></div>
     <script type="text/babel" src="OsebergSorOperatorRunde.js"></script>
     <script type="text/babel">
-        ReactDOM.render(React.createElement(OsebergSorOperatorRunde), document.getElementById('root'));
+        ReactDOM.render(
+            React.createElement(OsebergSorOperatorRunde),
+            document.getElementById('root')
+        );
     </script>
 </body>
 </html>
