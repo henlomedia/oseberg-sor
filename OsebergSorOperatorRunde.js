@@ -1,39 +1,12 @@
-import React, { useState, useCallback, memo } from 'react';
+import React from 'react';
 import { Alert } from '@/components/ui/alert';
 
-const Button = ({ children, onClick, className }) => (
-  <button 
-    onClick={onClick} 
-    className={`px-4 py-2 rounded ${className}`}
-  >
-    {children}
-  </button>
-);
-
-const Checkbox = ({ id, checked, onCheckedChange, label }) => (
-  <div className="flex items-center space-x-2">
-    <input
-      type="checkbox"
-      id={id}
-      checked={checked}
-      onChange={(e) => onCheckedChange(e.target.checked)}
-      className="h-4 w-4"
-    />
-    <label
-      htmlFor={id}
-      className={`${checked ? 'line-through text-gray-500' : ''}`}
-    >
-      {label}
-    </label>
-  </div>
-);
-
-const OsebergSorOperatorRunde = () => {
-  const [currentScreen, setCurrentScreen] = useState('welcome');
-  const [selectedArea, setSelectedArea] = useState(null);
-  const [error, setError] = useState(null);
+export default function OsebergSorOperatorRunde() {
+  const [currentScreen, setCurrentScreen] = React.useState('welcome');
+  const [selectedArea, setSelectedArea] = React.useState(null);
+  const [error, setError] = React.useState(null);
   
-  const [tasks, setTasks] = useState({
+  const [tasks, setTasks] = React.useState({
     P23: {
       'Test Separator': [
         { id: 1, description: 'Sjekk olje og vann nivå', completed: false },
@@ -122,7 +95,38 @@ const OsebergSorOperatorRunde = () => {
   const areasOppe = ['W21', 'P21/Mezz', 'C22', 'P22', 'P23', 'Boligkvarter'];
   const areasNede = ['P12', 'P11', 'W13', 'W12', 'W11', 'Z10', 'C12', 'C11'];
 
-  const selectArea = useCallback((area) => {
+  function Button({ children, onClick, className }) {
+    return (
+      <button 
+        onClick={onClick} 
+        className={`px-4 py-2 rounded ${className}`}
+      >
+        {children}
+      </button>
+    );
+  }
+
+  function Checkbox({ id, checked, onCheckedChange, label }) {
+    return (
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id={id}
+          checked={checked}
+          onChange={(e) => onCheckedChange(e.target.checked)}
+          className="h-4 w-4"
+        />
+        <label
+          htmlFor={id}
+          className={`${checked ? 'line-through text-gray-500' : ''}`}
+        >
+          {label}
+        </label>
+      </div>
+    );
+  }
+
+  function selectArea(area) {
     try {
       if (!tasks[area]) {
         throw new Error(`Ingen oppgaver funnet for område ${area}`);
@@ -133,9 +137,9 @@ const OsebergSorOperatorRunde = () => {
     } catch (err) {
       setError(err.message || 'En feil har oppstått');
     }
-  }, [tasks]);
+  }
 
-  const toggleTask = useCallback((area, category, id) => {
+  function toggleTask(area, category, id) {
     setTasks(prevTasks => ({
       ...prevTasks,
       [area]: {
@@ -145,9 +149,9 @@ const OsebergSorOperatorRunde = () => {
         ),
       },
     }));
-  }, []);
+  }
 
-  const resetTasks = useCallback((area) => {
+  function resetTasks(area) {
     setTasks(prevTasks => ({
       ...prevTasks,
       [area]: Object.fromEntries(
@@ -157,9 +161,9 @@ const OsebergSorOperatorRunde = () => {
         ])
       ),
     }));
-  }, []);
+  }
 
-  const resetAllTasks = useCallback(() => {
+  function resetAllTasks() {
     setTasks(prevTasks => {
       const resetTasks = {};
       for (const area in prevTasks) {
@@ -172,47 +176,51 @@ const OsebergSorOperatorRunde = () => {
       }
       return resetTasks;
     });
-  }, []);
+  }
 
-  const AreaButtons = memo(({ areas, color }) => (
-    <div className="grid grid-cols-2 gap-2">
-      {areas.map((area) => (
+  function AreaButtons({ areas, color }) {
+    return (
+      <div className="grid grid-cols-2 gap-2">
+        {areas.map((area) => (
+          <Button 
+            key={area} 
+            onClick={() => selectArea(area)} 
+            className={`w-full ${
+              color === 'blue' 
+                ? 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800' 
+                : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
+            } text-white`}
+          >
+            {area}
+          </Button>
+        ))}
+      </div>
+    );
+  }
+
+  function WelcomeScreen() {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Oseberg Sør</h1>
+        <div className="p-4 bg-blue-100 rounded-lg">
+          <h2 className="text-xl font-semibold mb-2 text-blue-800">Operatørrunde Oppe</h2>
+          <AreaButtons areas={areasOppe} color="blue" />
+        </div>
+        <div className="p-4 bg-green-100 rounded-lg">
+          <h2 className="text-xl font-semibold mb-2 text-green-800">Operatørrunde Nede</h2>
+          <AreaButtons areas={areasNede} color="green" />
+        </div>
         <Button 
-          key={area} 
-          onClick={() => selectArea(area)} 
-          className={`w-full ${
-            color === 'blue' 
-              ? 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800' 
-              : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
-          } text-white`}
+          onClick={resetAllTasks} 
+          className="w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white"
         >
-          {area}
+          Tilbakestill alle oppgaver
         </Button>
-      ))}
-    </div>
-  ));
-
-  const WelcomeScreen = () => (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Oseberg Sør</h1>
-      <div className="p-4 bg-blue-100 rounded-lg">
-        <h2 className="text-xl font-semibold mb-2 text-blue-800">Operatørrunde Oppe</h2>
-        <AreaButtons areas={areasOppe} color="blue" />
       </div>
-      <div className="p-4 bg-green-100 rounded-lg">
-        <h2 className="text-xl font-semibold mb-2 text-green-800">Operatørrunde Nede</h2>
-        <AreaButtons areas={areasNede} color="green" />
-      </div>
-      <Button 
-        onClick={resetAllTasks} 
-        className="w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white"
-      >
-        Tilbakestill alle oppgaver
-      </Button>
-    </div>
-  );
+    );
+  }
 
-  const TaskScreen = () => {
+  function TaskScreen() {
     if (!selectedArea || !tasks[selectedArea]) {
       return <Alert variant="destructive">Ingen område valgt eller oppgaver funnet</Alert>;
     }
@@ -252,7 +260,7 @@ const OsebergSorOperatorRunde = () => {
         </Button>
       </div>
     );
-  };
+  }
 
   return (
     <div className="p-4 max-w-md mx-auto">
@@ -264,6 +272,4 @@ const OsebergSorOperatorRunde = () => {
       {currentScreen === 'welcome' ? <WelcomeScreen /> : <TaskScreen />}
     </div>
   );
-};
-
-export default OsebergSorOperatorRunde;
+}
