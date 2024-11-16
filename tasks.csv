@@ -1,11 +1,11 @@
 area,category,taskId,description
-P23,Test Separator,1,Sjekk olje og vann nivå
-P23,Test Separator,2,Sjekk funksjonalitet på seglass ved behov
-P23,Hydrophoretanker,1,Sjekk nivå
-P23,Gasskjølere,1,Sjekk posisjon på TVer. Reguler bypass ved behov
-P23,Gasskjølere,2,Sjekk avleiringshemmer mengde (natt)
-P23,Kjemikaliepumper/Tanker,1,Sjekk kjemikaliepumper for normal trykk og lyd. Pumper skal ikke "banke" mot intern sikkerhetsventil.
-P23,Kjemikaliepumper/Tanker,2,Sjekk nivå i kjemikalietanker
+P23/Mezz,Test Separator,1,Sjekk olje og vann nivå
+P23/Mezz,Test Separator,2,Sjekk funksjonalitet på seglass ved behov
+P23/Mezz,Hydrophoretanker,1,Sjekk nivå
+P23/Mezz,Gasskjølere,1,Sjekk posisjon på TVer. Reguler bypass ved behov
+P23/Mezz,Gasskjølere,2,Sjekk avleiringshemmer mengde (natt)
+P23/Mezz,Kjemikaliepumper/Tanker,1,Sjekk kjemikaliepumper for normal trykk og lyd. Pumper skal ikke "banke" mot intern sikkerhetsventil.
+P23/Mezz,Kjemikaliepumper/Tanker,2,Sjekk nivå i kjemikalietanker
 P22,Rundown tanker,1,Sjekk nivå og overløp
 P22,Utsira tank,1,Sjekk nivå
 P22,Utsira tank,2,Sjekk funksjonalitet seglass ved behov
