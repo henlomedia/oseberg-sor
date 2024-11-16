@@ -4,39 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Operatørrunde</title>
-    <meta name="apple-mobile-web-app-title" content="Operatørrunde">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/papaparse@5.3.0/papaparse.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        html {
-            -webkit-text-size-adjust: 100%;
-        }
-        body {
-            background-color: rgb(249, 250, 251);
-        }
-        input[type="checkbox"] {
-            width: 1.2rem;
-            height: 1.2rem;
-        }
-        button {
-            min-height: 44px;
-            touch-action: manipulation;
-        }
-        * {
-            -webkit-tap-highlight-color: transparent;
-        }
+        body { background-color: #f9fafb; }
+        button { min-height: 44px; }
+        input[type="checkbox"] { width: 1.2rem; height: 1.2rem; }
     </style>
 </head>
 <body>
     <div id="root"></div>
-    <script type="text/babel" src="app.js"></script>
+    <script>
+        // Dette gjør at vi kan bruke JSX direkte i script-taggen under
+        const Button = ({ children, onClick, className }) => 
+            React.createElement('button', {
+                onClick,
+                className: `px-4 py-2 rounded text-white font-medium ${className}`
+            }, children);
+
+        const Checkbox = ({ id, checked, onChange, label }) =>
+            React.createElement('div', { className: 'flex items-start space-x-3 py-1' },
+                React.createElement('input', {
+                    type: 'checkbox',
+                    id,
+                    checked,
+                    onChange: (e) => onChange(e.target.checked),
+                    className: 'mt-1'
+                }),
+                React.createElement('label', {
+                    htmlFor: id,
+                    className: checked ? 'line-through text-gray-500' : 'text-gray-900'
+                }, label)
+            );
+    </script>
+    <script>
+        const App = () => {
+            const [tasks, setTasks] = React.useState({
+                P23: {
+                    'Test Separator': [
+                        { id: 1, description: 'Sjekk olje og vann nivå', completed: false },
+                        { id: 2, description: 'Sjekk funksjonalitet på seglass ved behov', completed: false }
+                    ]
+                },
+                // Legg til flere oppgaver her
+            });
+            const [currentScreen, setCurrentScreen] = React.useState('welcome');
+            const [selectedArea, setSelectedArea] = React.useState(null);
+
+            const areasOppe = ['W21', 'P21/Mezz', 'C22', 'P22', 'P23', 'Boligkvarter'];
+            const areasNede = ['P12', 'P11', 'W13', 'W12', 'W11', 'Z10', 'C12', 'C11'];
+
+            const selectArea = (area) => {
+                setSelectedArea(area);
+                setCurrentScreen('tasks');
+            };
+
+            const toggleTask = (area, category, id) => {
+                setTasks(prev => ({
+                    ...prev,
+                    [area]: {
+                        ...prev[area],
+                        [category]: prev[area][category].map(task =>
+                            task.id === id ? { ...task, completed: !task.completed } : task
+                        )
+                    }
+                }));
+            };
+
+            if (currentScreen === 'welcome') {
+                return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
+                    React.createElement('div', { className: 'space-y-6' },
+                        React.createElement('h1', { className: 'text-2xl font-bold' }, 'Oseberg Sør'),
+                        React.createElement('div', { className: 'p-4 bg-blue-100 rounded-lg' },
+                            React.createElement('h2', { className: 'text-xl font-semibold mb-2 text-blue-800' }, 'Operatørrunde Oppe'),
+                            React.createElement('div', { className: 'grid grid-cols-2 gap-2' },
+                                ...areasOppe.map(area =>
+                                    React.createElement(Button, {
+                                        key: area,
+                                        onClick: () => selectArea(area),
+                                        className: 'bg-blue-600 hover:bg-blue-700'
+                                    }, area)
+                                )
+                            )
+                        ),
+                        React.createElement('div', { className: 'p-4 bg-green-100 rounded-lg' },
+                            React.createElement('h2', { className: 'text-xl font-semibold mb-2 text-green-800' }, 'Operatørrunde Nede'),
+                            React.createElement('div', { className: 'grid grid-cols-2 gap-2' },
+                                ...areasNede.map(area =>
+                                    React.createElement(Button, {
+                                        key: area,
+                                        onClick: () => selectArea(area),
+                                        className: 'bg-green-600 hover:bg-green-700'
+                                    }, area)
+                                )
+                            )
+                        )
+                    )
+                );
+            }
+
+            // Task screen
+            return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
+                React.createElement('div', { className: 'space-y-4' },
+                    React.createElement('div', { className: 'flex items-center justify-between' },
+                        React.createElement(Button, {
+                            onClick: () => setCurrentScreen('welcome'),
+                            className: 'bg-gray-500 hover:bg-gray-600'
+                        }, 'Tilbake'),
+                        React.createElement('h2', { className: 'text-xl font-semibold' }, 
+                            `Oppgaver for ${selectedArea}`
+                        )
+                    ),
+                    tasks[selectedArea] && Object.entries(tasks[selectedArea]).map(([category, categoryTasks]) =>
+                        React.createElement('div', { key: category, className: 'bg-white rounded-lg p-4 shadow' },
+                            React.createElement('h3', { className: 'text-lg font-semibold mb-2' }, category),
+                            categoryTasks.map(task =>
+                                React.createElement(Checkbox, {
+                                    key: task.id,
+                                    id: `${selectedArea}-${category}-${task.id}`,
+                                    checked: task.completed,
+                                    onChange: () => toggleTask(selectedArea, category, task.id),
+                                    label: task.description
+                                })
+                            )
+                        )
+                    )
+                )
+            );
+        };
+
+        ReactDOM.render(
+            React.createElement(App),
+            document.getElementById('root')
+        );
+    </script>
 </body>
 </html>
