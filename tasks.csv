@@ -35,13 +35,13 @@ C22;Hydrophoretank;1;Sjekk nivå.  Sjekk også tank på D24
 W21;Dieselpumper;1;Sjekk oljenivå
 W21;Brannkanoner;1;Sjekk at de står i riktig retning
 P12;Smøreolje;1;Sjekk nivå smøreoljeskidd
-P12;Filter;1;Lufte europafilter
-P12;Hydraulikk;1;Sjekk nivå starthydraulikk
-P12;Hydrosykloner;1;Tilbakespyle hydrosykloner
-P12;Scrubber;1;Sjekk nivå last chance scrubber
+P12;Smøreolje;2;Lufte europafilter
+P12;Starthydraulikk;1;Sjekk nivå starthydraulikk og dP over filter
+P12;Hydrosykloner;1;Tilbakespyle
+P12;Last chance scrubber;1;Sjekk nivå
 P12;Kondensatpumper;1;Generell sjekk rundt kondensatpumpene
-P12;Stjerne-hydraulikk;1;Sjekk dP filtre, nivå og lekkasjer Stjerne-hydraulikk
-P12;J/K hydraulikk;1;Sjekk dP filtre,  nivå og lekkasjer J/K hydraulikk
+P12;Stjerne-hydraulikk;1;Sjekk dP filtre, nivå og lekkasjer samt oljenivå på pumper
+P12;J/K hydraulikk;1;Sjekk dP filtre, nivå og lekkasjer samt oljenivå på pumper
 Boligkvarter;6. Etasje;1;Sjekk varmtvannsbereder, vifter og kjøleanlegg
 Boligkvarter;1. Etasje;1;Sjekk vifter og spjeld
 C11;Lufttank;1;Bunnblåse/Sjekk for vann
@@ -49,6 +49,7 @@ C11;Sjøvannspumper ;1;Sjekk oljenivå
 C11;Luftkompressor ;1;Sjekk olje
 C11;Luftkompressor ;2;Sjekk kjølevæskenivå
 C11;Luftkompressor ;3;Sjekk kondenspotter funksjon
+C11;Luftkompressor ;4;Sjekk seglass kjølevæske
 C11;Nødgeneratorer ;1;Dieselnivå
 C11;Nødgeneratorer ;2;Ekspansjonstank nivå
 C11;Nødgeneratorer ;3;Sirkulasjonspumpe
@@ -62,6 +63,9 @@ C12;EVA rom ;3;Sjekk UV pakke 
 C12;RF1;1;Nivå og trykk 
 Z10;IV paneler M;1;Sjekk hydraulikktrykk for termisk ekspansjon
 Z10;EV ventiler;1;Sjekk akkumulator nivåer
+Z10;J-tubes;1;Sjekk N2 trykk
+W11;Brønner og manifolder;1;Generell sjekk og sjekk av D-ringrom
+W11;Sjøvannsretur;1;Sjekk kondenspotte og luftflow
 W11;Produksjonskjemikalier;1;Sjekk avleiringshemmer
 W11;Produksjonskjemikalier;2;Sjekk korrosjonshemmer subsea 
 W11;Brønnhydraulikk;1;Oljenivå tank
@@ -80,6 +84,7 @@ P11/Mezz;Oljeeksportpumper;1;Oljenivå på el.motor og pumper
 P11/Mezz;Oljeeksportpumper;2;Sjekk sperrevæske nivå og trykk 
 P11/Mezz;Vanninjeksjonspumper;1;Sjekk oljenivå på el.motor og pumper
 P11/Mezz;Vanninjeksjonspumper;2;Sjekk sperrevæske nivå/trykk
+P11/Mezz;Vanninjeksjonspumper;3;Sjekk oljenivå og trykk
 P11/Mezz;Boosterpumper ;1;Sjekk oljenivå
 P11/Mezz;Boosterpumper ;2;Sjekk sperrevæske trykk
 P11/Mezz;Platformhydraulikk;1;Sjekk oljenivå tank
