@@ -14,30 +14,38 @@ const OsebergSorOperatorRunde = () => {
   const [tasks, setTasks] = useState({
     P23: {
       'Test Separator': [
-        { id: 1, description: 'Sjekk olje/vann nivå', completed: false },
-        { id: 2, description: 'Sjekk funksjonalitet seglass', completed: false },
+        { id: 1, description: 'Sjekk olje og vann nivå', completed: false },
+        { id: 2, description: 'Sjekk funksjonalitet på seglass ved behov', completed: false },
       ],
       'Hydrophoretanker': [
         { id: 1, description: 'Sjekk nivå', completed: false },
       ],
       'Gasskjølere': [
-        { id: 1, description: 'Sjekk TVer for regulering', completed: false },
-        { id: 2, description: 'Sjekk avl.hemmer mengde (natt)', completed: false },
+        { id: 1, description: 'Sjekk posisjon på TVer. Reguler bypass ved behov', completed: false },
+        { id: 2, description: 'Sjekk avleiringshemmer mengde (natt)', completed: false },
       ],
-      'Kjemikalier': [
-        { id: 1, description: 'Sjekk kjemikaliepumper for normal trykk og lyd', completed: false },
+      'Kjemikaliepumper/Tanker': [
+        { id: 1, description: 'Sjekk kjemikaliepumper for normal trykk og lyd. Pumper skal ikke "banke" mot intern sikkerhetsventil.', completed: false },
         { id: 2, description: 'Sjekk nivå i kjemikalietanker', completed: false },
       ],
     },
     P22: {
-      'Tanker': [
-        { id: 1, description: 'Sjekk RunDown tanker for nivå/overløp', completed: false },
-        { id: 2, description: 'Sjekk Utsira tank for nivå og funksjonalitet seglass', completed: false },
+      'Rundown tanker': [
+        { id: 1, description: 'Sjekk nivå og overløp', completed: false },
       ],
-      'Utstyr': [
-        { id: 1, description: 'Sjekk Dollinger for dP filter og vakum', completed: false },
-        { id: 2, description: 'Sjekk Em.bryter subsea for mengde', completed: false },
-        { id: 3, description: 'Sjekk EV blowdown M for akkumulator nivåer', completed: false },
+      'Utsira tank': [
+        { id: 1, description: 'Sjekk nivå', completed: false },
+        { id: 2, description: 'Sjekk funksjonalitet seglass ved behov', completed: false },
+      ],
+      'Dollinger': [
+        { id: 1, description: 'Sjekk dP filter', completed: false },
+        { id: 2, description: 'Sjekk vakuum', completed: false },
+      ],
+      'Emulsjonsbryter Subsea': [
+        { id: 1, description: 'Sjekk mengde', completed: false },
+      ],
+      'EV blowdown M': [
+        { id: 1, description: 'Akkumulator nivåer og trykk', completed: false },
       ],
     },
   });
