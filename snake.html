@@ -118,12 +118,12 @@
         let score = 0;
         let gameStarted = false;
         let highScores = [];
-        let interval = 150; // Hastigheten på spillet
+        let interval = 150;
 
         const baconImage = new Image();
-        baconImage.src = 'bacon.png'; // Sørg for at bildet eksisterer
+        baconImage.src = 'bacon.png';
         const nilsImage = new Image();
-        nilsImage.src = 'nils.png'; // Sørg for at bildet eksisterer
+        nilsImage.src = 'nils.png';
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -183,15 +183,29 @@
         }
 
         async function saveHighScore() {
+            console.log("saveHighScore ble utløst!");
             const name = document.getElementById('nameInput').value.trim();
-            if (!name) return;
-            await addDoc(collection(db, "highscores"), { name, score, date: new Date().toISOString() });
-            fetchHighScores();
+            if (!name) {
+                alert("Du må skrive inn et navn!");
+                return;
+            }
+
+            try {
+                console.log("Lagrer score i Firestore...");
+                await addDoc(collection(db, "highscores"), { name, score, date: new Date().toISOString() });
+                console.log("Score lagret i Firestore!");
+                fetchHighScores();
+            } catch (error) {
+                console.error("Feil ved lagring av score:", error);
+                alert("Kunne ikke lagre score. Sjekk konsollen for detaljer.");
+            }
+
             document.getElementById('highscoreInput').style.display = 'none';
             resetGame();
         }
 
         function resetGame() {
+            console.log("Resetter spillet...");
             score = 0;
             snake = [{ x: 200, y: 200 }];
             dx = GRID_SIZE;
