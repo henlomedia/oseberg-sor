@@ -102,6 +102,11 @@
                 setCurrentScreen('tasks');
             };
 
+            // Funksjon for å gå til snake-spillet
+            const goToSnakeGame = () => {
+                window.location.href = 'snake.html';
+            };
+
             // Funksjon for å toggle oppgaver
             const toggleTask = (area, category, id) => {
                 const newTasks = {
@@ -223,8 +228,12 @@
                     ),
                     React.createElement(Button, {
                         onClick: () => resetTasks(selectedArea),
-                        className: 'w-full bg-yellow-600 hover:bg-yellow-700'
-                    }, `Tilbakestill oppgaver for ${selectedArea}`)
+                        className: 'w-full bg-yellow-600 hover:bg-yellow-700 mb-2'
+                    }, `Tilbakestill oppgaver for ${selectedArea}`),
+                    React.createElement('button', {
+                        onClick: goToSnakeGame,
+                        className: 'w-full bg-white text-black border-2 border-black rounded px-4 py-2 font-medium hover:bg-gray-100'
+                    }, 'Flesk og duppe spillet')
                 )
             );
         };
