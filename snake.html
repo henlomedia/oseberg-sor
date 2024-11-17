@@ -19,38 +19,35 @@
         }
         #controls {
             position: fixed;
-            bottom: 20px;
+            bottom: 40px; /* Økt fra 20px for bedre plassering på iPad */
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 15px; /* Økt fra 10px for bedre touch på iPad */
             touch-action: none;
         }
         .control-row {
             display: flex;
-            gap: 10px;
+            gap: 15px; /* Økt fra 10px for bedre touch på iPad */
         }
         .control-btn {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.7);
-            border: 2px solid #333;
+            width: 80px; /* Økt fra 60px for bedre touch på iPad */
+            height: 80px; /* Økt fra 60px for bedre touch på iPad */
+            background: rgba(255, 255, 255, 0.8); /* Økt opacity litt */
+            border: 3px solid #333; /* Økt fra 2px for bedre synlighet */
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 32px; /* Økt fra 24px for bedre synlighet */
             touch-action: none;
             -webkit-user-select: none;
             user-select: none;
+            cursor: pointer;
         }
-        @media (min-width: 768px) {
-            #controls {
-                display: none;
-            }
-        }
+        /* Fjernet media query som skjulte kontrollene på større skjermer */
     </style>
 </head>
 <body>
@@ -71,8 +68,8 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Juster GRID_SIZE basert på skjermstørrelse
-        const GRID_SIZE = Math.min(window.innerWidth, window.innerHeight) > 768 ? 50 : 40;
+        // Juster GRID_SIZE basert på skjermstørrelse, men holder den litt større for iPad
+        const GRID_SIZE = 50;
 
         let snake = [{x: GRID_SIZE, y: GRID_SIZE}];
         let dx = GRID_SIZE;
@@ -101,6 +98,12 @@
             
             if (food.x > canvas.width - GRID_SIZE) food.x -= GRID_SIZE;
             if (food.y > canvas.height - GRID_SIZE) food.y -= GRID_SIZE;
+
+            // Unngå at maten havner under kontrollene
+            const controlsHeight = 300; // Omtrentlig høyde på kontrollene
+            if (food.y > canvas.height - controlsHeight) {
+                food.y = canvas.height - controlsHeight - GRID_SIZE;
+            }
         }
 
         function drawBacon(x, y) {
@@ -128,8 +131,8 @@
             
             if (head.x >= canvas.width) head.x = 0;
             if (head.x < 0) head.x = canvas.width - GRID_SIZE;
-            if (head.y >= canvas.height) head.y = 0;
-            if (head.y < 0) head.y = canvas.height - GRID_SIZE;
+            if (head.y >= canvas.height - 300) head.y = 0; // Unngå at slangen går under kontrollene
+            if (head.y < 0) head.y = canvas.height - 300 - GRID_SIZE;
 
             for (let i = 1; i < snake.length; i++) {
                 if (head.x === snake[i].x && head.y === snake[i].y) {
@@ -182,12 +185,6 @@
             setTimeout(() => requestAnimationFrame(gameLoop), gameSpeed);
         }
 
-        // Touch-kontroller
-        const upBtn = document.getElementById('upBtn');
-        const downBtn = document.getElementById('downBtn');
-        const leftBtn = document.getElementById('leftBtn');
-        const rightBtn = document.getElementById('rightBtn');
-
         function handleDirection(direction) {
             if (!gameStarted) {
                 snake = [{x: GRID_SIZE, y: GRID_SIZE}];
@@ -215,28 +212,23 @@
             }
         }
 
-        // Touch-hendelser
-        upBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleDirection('up');
+        // Touch-hendelser med forbedret håndtering
+        ['upBtn', 'downBtn', 'leftBtn', 'rightBtn'].forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            const direction = btnId.replace('Btn', '');
+            
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handleDirection(direction);
+            });
+            
+            btn.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                handleDirection(direction);
+            });
         });
 
-        downBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleDirection('down');
-        });
-
-        leftBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleDirection('left');
-        });
-
-        rightBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleDirection('right');
-        });
-
-        // Tastatur-kontroller (beholdt for PC-bruk)
+        // Tastatur-kontroller
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && !gameStarted) {
                 handleDirection();
@@ -258,9 +250,14 @@
             }
         });
 
-        // Touch for å starte spillet
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            if (!gameStarted) {
+                handleDirection();
+            }
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
             if (!gameStarted) {
                 handleDirection();
             }
