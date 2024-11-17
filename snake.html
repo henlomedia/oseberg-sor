@@ -12,46 +12,65 @@
             overflow: hidden;
             touch-action: none;
             background: #f0f0f0;
+            display: flex;
+            flex-direction: column;
         }
+        
+        #gameContainer {
+            flex: 1;
+            min-height: 0;
+            position: relative;
+        }
+
         #gameCanvas {
             display: block;
             touch-action: none;
+            width: 100%;
+            height: 100%;
         }
+
         #controls {
-            position: fixed;
-            bottom: 40px; /* Økt fra 20px for bedre plassering på iPad */
-            left: 50%;
-            transform: translateX(-50%);
+            width: 100%;
+            padding: 20px;
+            background: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px; /* Økt fra 10px for bedre touch på iPad */
+            gap: 15px;
             touch-action: none;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
+
         .control-row {
             display: flex;
-            gap: 15px; /* Økt fra 10px for bedre touch på iPad */
+            gap: 15px;
         }
+
         .control-btn {
-            width: 80px; /* Økt fra 60px for bedre touch på iPad */
-            height: 80px; /* Økt fra 60px for bedre touch på iPad */
-            background: rgba(255, 255, 255, 0.8); /* Økt opacity litt */
-            border: 3px solid #333; /* Økt fra 2px for bedre synlighet */
+            width: 80px;
+            height: 80px;
+            background: #f8f9fa;
+            border: 3px solid #333;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px; /* Økt fra 24px for bedre synlighet */
+            font-size: 32px;
             touch-action: none;
             -webkit-user-select: none;
             user-select: none;
             cursor: pointer;
         }
-        /* Fjernet media query som skjulte kontrollene på større skjermer */
+
+        .control-btn:active {
+            background: #e9ecef;
+        }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+    </div>
     <div id="controls">
         <div class="control-row">
             <button class="control-btn" id="upBtn">↑</button>
@@ -67,9 +86,20 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const gameContainer = document.getElementById('gameContainer');
 
-        // Juster GRID_SIZE basert på skjermstørrelse, men holder den litt større for iPad
-        const GRID_SIZE = 50;
+        function resizeCanvas() {
+            // Sett canvas størrelse til container størrelse
+            canvas.width = gameContainer.clientWidth;
+            canvas.height = gameContainer.clientHeight;
+        }
+
+        // Kall resizeCanvas når vinduet endrer størrelse
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Juster GRID_SIZE basert på canvas størrelse
+        const GRID_SIZE = Math.min(canvas.width, canvas.height) > 768 ? 50 : 40;
 
         let snake = [{x: GRID_SIZE, y: GRID_SIZE}];
         let dx = GRID_SIZE;
@@ -84,26 +114,12 @@
         baconImage.src = 'bacon.png';
         snakeImage.src = 'nils.png';
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
         function createFood() {
             food.x = Math.floor(Math.random() * (canvas.width / GRID_SIZE)) * GRID_SIZE;
             food.y = Math.floor(Math.random() * (canvas.height / GRID_SIZE)) * GRID_SIZE;
             
             if (food.x > canvas.width - GRID_SIZE) food.x -= GRID_SIZE;
             if (food.y > canvas.height - GRID_SIZE) food.y -= GRID_SIZE;
-
-            // Unngå at maten havner under kontrollene
-            const controlsHeight = 300; // Omtrentlig høyde på kontrollene
-            if (food.y > canvas.height - controlsHeight) {
-                food.y = canvas.height - controlsHeight - GRID_SIZE;
-            }
         }
 
         function drawBacon(x, y) {
@@ -131,8 +147,8 @@
             
             if (head.x >= canvas.width) head.x = 0;
             if (head.x < 0) head.x = canvas.width - GRID_SIZE;
-            if (head.y >= canvas.height - 300) head.y = 0; // Unngå at slangen går under kontrollene
-            if (head.y < 0) head.y = canvas.height - 300 - GRID_SIZE;
+            if (head.y >= canvas.height) head.y = 0;
+            if (head.y < 0) head.y = canvas.height - GRID_SIZE;
 
             for (let i = 1; i < snake.length; i++) {
                 if (head.x === snake[i].x && head.y === snake[i].y) {
@@ -212,7 +228,7 @@
             }
         }
 
-        // Touch-hendelser med forbedret håndtering
+        // Touch og click hendelser for kontrollene
         ['upBtn', 'downBtn', 'leftBtn', 'rightBtn'].forEach(btnId => {
             const btn = document.getElementById(btnId);
             const direction = btnId.replace('Btn', '');
