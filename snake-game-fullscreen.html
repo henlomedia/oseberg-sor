@@ -2,7 +2,7 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Snake Spill med Nils</title>
     <style>
         body, html {
@@ -10,19 +10,69 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
+            touch-action: none;
+            background: #f0f0f0;
         }
         #gameCanvas {
             display: block;
+            touch-action: none;
+        }
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            touch-action: none;
+        }
+        .control-row {
+            display: flex;
+            gap: 10px;
+        }
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        @media (min-width: 768px) {
+            #controls {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
+    <div id="controls">
+        <div class="control-row">
+            <button class="control-btn" id="upBtn">↑</button>
+        </div>
+        <div class="control-row">
+            <button class="control-btn" id="leftBtn">←</button>
+            <button class="control-btn" id="rightBtn">→</button>
+        </div>
+        <div class="control-row">
+            <button class="control-btn" id="downBtn">↓</button>
+        </div>
+    </div>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        const GRID_SIZE = 50; // Økt fra 40 til 50
+        // Juster GRID_SIZE basert på skjermstørrelse
+        const GRID_SIZE = Math.min(window.innerWidth, window.innerHeight) > 768 ? 50 : 40;
 
         let snake = [{x: GRID_SIZE, y: GRID_SIZE}];
         let dx = GRID_SIZE;
@@ -59,13 +109,6 @@
             } else {
                 ctx.fillStyle = '#FFA07A';
                 ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
-                ctx.strokeStyle = '#8B0000';
-                ctx.beginPath();
-                ctx.moveTo(x, y + GRID_SIZE * 0.3);
-                ctx.lineTo(x + GRID_SIZE, y + GRID_SIZE * 0.3);
-                ctx.moveTo(x, y + GRID_SIZE * 0.7);
-                ctx.lineTo(x + GRID_SIZE, y + GRID_SIZE * 0.7);
-                ctx.stroke();
             }
         }
 
@@ -88,7 +131,6 @@
             if (head.y >= canvas.height) head.y = 0;
             if (head.y < 0) head.y = canvas.height - GRID_SIZE;
 
-            // Sjekk kollisjon med seg selv
             for (let i = 1; i < snake.length; i++) {
                 if (head.x === snake[i].x && head.y === snake[i].y) {
                     gameOver();
@@ -113,9 +155,9 @@
             ctx.fillStyle = 'white';
             ctx.font = '30px Arial';
             ctx.fillText('Game Over!', canvas.width / 2 - 70, canvas.height / 2 - 15);
-            ctx.fillText(`Score: ${score}`, canvas.width / 2 - 50, canvas.height / 2 + 25);
+            ctx.fillText(`Poeng: ${score}`, canvas.width / 2 - 50, canvas.height / 2 + 25);
             ctx.font = '20px Arial';
-            ctx.fillText('Press Space to restart', canvas.width / 2 - 100, canvas.height / 2 + 60);
+            ctx.fillText('Trykk på skjermen for å starte på nytt', canvas.width / 2 - 150, canvas.height / 2 + 60);
         }
 
         function gameLoop() {
@@ -134,35 +176,93 @@
             if (!gameStarted) {
                 ctx.fillStyle = 'black';
                 ctx.font = '30px Arial';
-                ctx.fillText('Trykk mellomrom for å starte', canvas.width / 2 - 150, canvas.height / 2);
+                ctx.fillText('Trykk på skjermen for å starte', canvas.width / 2 - 150, canvas.height / 2);
             }
 
             setTimeout(() => requestAnimationFrame(gameLoop), gameSpeed);
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && !gameStarted) {
+        // Touch-kontroller
+        const upBtn = document.getElementById('upBtn');
+        const downBtn = document.getElementById('downBtn');
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+
+        function handleDirection(direction) {
+            if (!gameStarted) {
                 snake = [{x: GRID_SIZE, y: GRID_SIZE}];
                 dx = GRID_SIZE;
                 dy = 0;
                 score = 0;
                 gameStarted = true;
                 createFood();
+                return;
+            }
+
+            switch (direction) {
+                case 'up':
+                    if (dy === 0) { dx = 0; dy = -GRID_SIZE; }
+                    break;
+                case 'down':
+                    if (dy === 0) { dx = 0; dy = GRID_SIZE; }
+                    break;
+                case 'left':
+                    if (dx === 0) { dx = -GRID_SIZE; dy = 0; }
+                    break;
+                case 'right':
+                    if (dx === 0) { dx = GRID_SIZE; dy = 0; }
+                    break;
+            }
+        }
+
+        // Touch-hendelser
+        upBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleDirection('up');
+        });
+
+        downBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleDirection('down');
+        });
+
+        leftBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleDirection('left');
+        });
+
+        rightBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleDirection('right');
+        });
+
+        // Tastatur-kontroller (beholdt for PC-bruk)
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !gameStarted) {
+                handleDirection();
             } else if (gameStarted) {
                 switch (e.code) {
                     case 'ArrowUp':
-                        if (dy === 0) { dx = 0; dy = -GRID_SIZE; }
+                        handleDirection('up');
                         break;
                     case 'ArrowDown':
-                        if (dy === 0) { dx = 0; dy = GRID_SIZE; }
+                        handleDirection('down');
                         break;
                     case 'ArrowLeft':
-                        if (dx === 0) { dx = -GRID_SIZE; dy = 0; }
+                        handleDirection('left');
                         break;
                     case 'ArrowRight':
-                        if (dx === 0) { dx = GRID_SIZE; dy = 0; }
+                        handleDirection('right');
                         break;
                 }
+            }
+        });
+
+        // Touch for å starte spillet
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (!gameStarted) {
+                handleDirection();
             }
         });
 
