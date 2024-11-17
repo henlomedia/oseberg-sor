@@ -42,6 +42,29 @@
             font-size: min(8vw, 60px);
         }
 
+        .top-scores {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 14px;
+            text-align: left;
+            z-index: 1;
+            line-height: 1.5;
+            min-width: 150px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .top-scores h3 {
+            margin: 0 0 5px 0;
+            text-align: center;
+            color: #1d1d1f;
+            font-size: 16px;
+        }
+
         .highscore-input {
             position: fixed;
             top: 0;
@@ -90,11 +113,17 @@
             padding: 15px;
             background: rgba(0, 0, 0, 0.05);
             border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
             font-size: 14px;
             line-height: 1.5;
         }
 
         .scores-container h3 {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 5px 0;
             text-align: center;
             margin: 0 0 10px 0;
             color: #1d1d1f;
@@ -131,13 +160,14 @@
 </head>
 <body>
     <div class="watermark">Flesk og Duppe</div>
+    <div class="top-scores" id="topScores"></div>
     <div id="highscoreInput" class="highscore-input">
         <div class="highscore-content">
-            <h2>Ny High Score!</h2>
+            <h2 id="scoreTitle">Ny High Score!</h2>
             <p>Dine poeng: <span id="finalScore">0</span></p>
             <input type="text" id="nameInput" placeholder="Skriv ditt navn" maxlength="20">
             <div class="scores-container">
-                <h3>High Scores</h3>
+                <h3>Topp 10</h3>
                 <div id="scores"></div>
             </div>
             <div class="button-group">
@@ -177,22 +207,42 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
+        function updateTopScores() {
+            if (!gameStarted) {
+                document.getElementById('topScores').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('topScores').style.display = 'block';
+            const topScoresDiv = document.getElementById('topScores');
+            const top3 = highScores
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 3);
+                
+            topScoresDiv.innerHTML = '<h3>Topp 3</h3>' + 
+                top3.map((score, i) => `${i + 1}. ${score.name}: ${score.score}`).join('<br>');
+        }
+
         function updateHighScoreList() {
             const scoresDiv = document.getElementById('scores');
             scoresDiv.innerHTML = highScores
                 .sort((a, b) => b.score - a.score)
-                .slice(0, 5)
+                .slice(0, 10)
                 .map((score, i) => `${i + 1}. ${score.name}: ${score.score}`)
                 .join('<br>');
         }
 
         function checkHighScore(score) {
-            const lowestScore = highScores.length < 5 ? 0 : 
-                Math.min(...highScores.map(x => x.score));
+            const isNewTopScore = score > (highScores.length > 0 ? Math.max(...highScores.map(x => x.score)) : 0);
+            const lowestScore = highScores.length < 10 ? 0 : Math.min(...highScores.map(x => x.score));
             
-            if (score > lowestScore || highScores.length < 5) {
+            if (score > lowestScore || highScores.length < 10) {
                 document.getElementById('finalScore').textContent = score;
                 document.getElementById('highscoreInput').style.display = 'flex';
+                
+                document.getElementById('scoreTitle').textContent = 
+                    isNewTopScore ? 'Ny High Score!' : 'Bra jobba!';
+                
                 document.getElementById('nameInput').focus();
                 updateHighScoreList();
             } else {
@@ -211,13 +261,14 @@
             });
 
             highScores.sort((a, b) => b.score - a.score);
-            if (highScores.length > 5) {
-                highScores.length = 5;
+            if (highScores.length > 10) {
+                highScores.length = 10;
             }
 
             localStorage.setItem('snakeHighScores', JSON.stringify(highScores));
             document.getElementById('highscoreInput').style.display = 'none';
             document.getElementById('nameInput').value = '';
+            updateTopScores();
             startGame();
         }
 
@@ -382,6 +433,7 @@
                     moveSnake();
                     drawSnake();
                     drawBacon(food.x, food.y);
+                    updateTopScores();
                     
                     ctx.fillStyle = '#1d1d1f';
                     ctx.font = '20px -apple-system';
@@ -437,6 +489,13 @@
             e.stopPropagation();
         });
 
+        document.getElementById('nameInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveHighScore();
+            }
+        });
+
+        updateTopScores();
         requestAnimationFrame(gameLoop);
     </script>
 </body>
