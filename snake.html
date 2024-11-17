@@ -76,10 +76,40 @@
         resizeCanvas();
 
         function createFood() {
-            const maxX = Math.floor((canvas.width - GRID_SIZE) / GRID_SIZE);
-            const maxY = Math.floor((canvas.height - GRID_SIZE) / GRID_SIZE);
-            food.x = Math.floor(Math.random() * maxX) * GRID_SIZE;
-            food.y = Math.floor(Math.random() * maxY) * GRID_SIZE;
+            // Beregn sikre grenser for matplassering
+            const margin = GRID_SIZE; // Sikkerhetsmarg fra kanten
+            const maxX = Math.floor((canvas.width - margin * 2) / GRID_SIZE);
+            const maxY = Math.floor((canvas.height - margin * 2) / GRID_SIZE);
+            
+            let newX, newY;
+            let validPosition = false;
+            
+            // Prøv å finne en gyldig posisjon som ikke overlapper med slangen
+            while (!validPosition) {
+                // Legg til margin i posisjonen for å unngå kanter
+                newX = (Math.floor(Math.random() * maxX) + 1) * GRID_SIZE;
+                newY = (Math.floor(Math.random() * maxY) + 1) * GRID_SIZE;
+                
+                // Sjekk om posisjonen er opptatt av slangen
+                validPosition = true;
+                for (let segment of snake) {
+                    if (segment.x === newX && segment.y === newY) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+                
+                // Sjekk at posisjonen er innenfor synlig område
+                if (newX >= canvas.width - GRID_SIZE || 
+                    newY >= canvas.height - GRID_SIZE ||
+                    newX < GRID_SIZE || 
+                    newY < GRID_SIZE) {
+                    validPosition = false;
+                }
+            }
+            
+            food.x = newX;
+            food.y = newY;
         }
 
         function drawBacon(x, y) {
@@ -151,28 +181,6 @@
             score = 0;
             gameStarted = true;
             createFood();
-        }
-
-        function handleDirection(direction) {
-            if (!gameStarted) {
-                startGame();
-                return;
-            }
-            
-            switch (direction) {
-                case 'up':
-                    if (dy === 0) { dx = 0; dy = -GRID_SIZE; }
-                    break;
-                case 'down':
-                    if (dy === 0) { dx = 0; dy = GRID_SIZE; }
-                    break;
-                case 'left':
-                    if (dx === 0) { dx = -GRID_SIZE; dy = 0; }
-                    break;
-                case 'right':
-                    if (dx === 0) { dx = GRID_SIZE; dy = 0; }
-                    break;
-            }
         }
 
         function handleTouch(e) {
@@ -252,16 +260,16 @@
 
             switch (e.code) {
                 case 'ArrowUp':
-                    handleDirection('up');
+                    if (dy === 0) { dx = 0; dy = -GRID_SIZE; }
                     break;
                 case 'ArrowDown':
-                    handleDirection('down');
+                    if (dy === 0) { dx = 0; dy = GRID_SIZE; }
                     break;
                 case 'ArrowLeft':
-                    handleDirection('left');
+                    if (dx === 0) { dx = -GRID_SIZE; dy = 0; }
                     break;
                 case 'ArrowRight':
-                    handleDirection('right');
+                    if (dx === 0) { dx = GRID_SIZE; dy = 0; }
                     break;
             }
         });
