@@ -8,60 +8,39 @@
         body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
             height: 100%;
             overflow: hidden;
             touch-action: none;
-            background: #f5f5f7;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-        
-        #gameContainer {
-            margin: 0;
-            background: #ffffff;
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #gameCanvas {
-            display: block;
-            touch-action: none;
-            width: 100%;
-            height: 100%;
             background: #fbfbfd;
         }
-
-        #controls {
-            display: none; /* Skjuler pilkontrollene */
+        
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            touch-action: none;
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas"></canvas>
-    </div>
+    <canvas id="gameCanvas"></canvas>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const gameContainer = document.getElementById('gameContainer');
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            GRID_SIZE = Math.min(Math.floor(canvas.width / 20), Math.floor(canvas.height / 15));
+            GRID_SIZE = Math.min(Math.floor(canvas.width / 30), Math.floor(canvas.height / 30));
         }
 
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
         let GRID_SIZE;
-        let snake = [{x: GRID_SIZE, y: GRID_SIZE}];
-        let dx = GRID_SIZE;
+        let snake = [];
+        let dx = 0;
         let dy = 0;
         let food = {x: 0, y: 0};
         let score = 0;
@@ -133,56 +112,11 @@
             
             ctx.textAlign = 'center';
             ctx.fillStyle = 'white';
-            ctx.font = `bold ${Math.max(20, canvas.width / 20)}px -apple-system`;
+            ctx.font = 'bold 30px -apple-system';
             ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2 - 30);
-            
-            ctx.font = `${Math.max(16, canvas.width / 25)}px -apple-system`;
             ctx.fillText(`Poeng: ${score}`, canvas.width / 2, canvas.height / 2 + 10);
-            
-            ctx.font = `${Math.max(14, canvas.width / 30)}px -apple-system`;
+            ctx.font = '20px -apple-system';
             ctx.fillText('Trykk på skjermen for å starte på nytt', canvas.width / 2, canvas.height / 2 + 50);
-        }
-
-        function handleTouch(e) {
-            e.preventDefault();
-            
-            if (!gameStarted) {
-                startGame();
-                return;
-            }
-
-            const touch = e.touches[0];
-            const touchX = touch.clientX;
-            const touchY = touch.clientY;
-            
-            // Del skjermen i soner og bestem retning basert på touch-posisjon
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            // Beregn avstand fra sentrum
-            const deltaX = touchX - centerX;
-            const deltaY = touchY - centerY;
-            
-            // Determine movement based on the largest difference
-            if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                // Horisontal bevegelse
-                if (deltaX > 0 && dy !== 0) {
-                    dx = GRID_SIZE;
-                    dy = 0;
-                } else if (deltaX < 0 && dy !== 0) {
-                    dx = -GRID_SIZE;
-                    dy = 0;
-                }
-            } else {
-                // Vertikal bevegelse
-                if (deltaY > 0 && dx !== 0) {
-                    dx = 0;
-                    dy = GRID_SIZE;
-                } else if (deltaY < 0 && dx !== 0) {
-                    dx = 0;
-                    dy = -GRID_SIZE;
-                }
-            }
         }
 
         function startGame() {
@@ -195,6 +129,37 @@
             score = 0;
             gameStarted = true;
             createFood();
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            
+            if (!gameStarted) {
+                startGame();
+                return;
+            }
+
+            const touchX = touch.clientX;
+            const touchY = touch.clientY;
+            
+            const relativeX = touchX / canvas.width;
+            const relativeY = touchY / canvas.height;
+            
+            // Bestem retning basert på hvilken del av skjermen som ble trykket på
+            if (relativeX > 0.6 && dy !== 0) { // Høyre side
+                dx = GRID_SIZE;
+                dy = 0;
+            } else if (relativeX < 0.4 && dy !== 0) { // Venstre side
+                dx = -GRID_SIZE;
+                dy = 0;
+            } else if (relativeY < 0.4 && dx !== 0) { // Øvre del
+                dx = 0;
+                dy = -GRID_SIZE;
+            } else if (relativeY > 0.6 && dx !== 0) { // Nedre del
+                dx = 0;
+                dy = GRID_SIZE;
+            }
         }
 
         function gameLoop(timestamp) {
@@ -211,12 +176,12 @@
                     drawBacon(food.x, food.y);
                     
                     ctx.fillStyle = '#1d1d1f';
-                    ctx.font = `${Math.max(16, canvas.width / 30)}px -apple-system`;
+                    ctx.font = '20px -apple-system';
                     ctx.textAlign = 'left';
                     ctx.fillText(`Poeng: ${score}`, 15, 30);
                 } else if (!gameStarted && score === 0) {
                     ctx.fillStyle = '#1d1d1f';
-                    ctx.font = `${Math.max(18, canvas.width / 25)}px -apple-system`;
+                    ctx.font = '30px -apple-system';
                     ctx.textAlign = 'center';
                     ctx.fillText('Trykk på skjermen for å starte', canvas.width / 2, canvas.height / 2);
                 }
@@ -227,32 +192,32 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Touch event listeners
+        // Touch events for mobile
         canvas.addEventListener('touchstart', handleTouch);
-        
-        // Tastatur-kontroller (beholdt for desktop)
+
+        // Keyboard controls for desktop
         document.addEventListener('keydown', (e) => {
-            if (!gameStarted && e.code === 'Space') {
-                startGame();
-            } else if (gameStarted) {
-                switch (e.code) {
-                    case 'ArrowUp':
-                        if (dy === 0) { dx = 0; dy = -GRID_SIZE; }
-                        break;
-                    case 'ArrowDown':
-                        if (dy === 0) { dx = 0; dy = GRID_SIZE; }
-                        break;
-                    case 'ArrowLeft':
-                        if (dx === 0) { dx = -GRID_SIZE; dy = 0; }
-                        break;
-                    case 'ArrowRight':
-                        if (dx === 0) { dx = GRID_SIZE; dy = 0; }
-                        break;
-                }
+            if (!gameStarted) {
+                if (e.code === 'Space') startGame();
+                return;
+            }
+
+            switch (e.code) {
+                case 'ArrowUp':
+                    if (dy === 0) { dx = 0; dy = -GRID_SIZE; }
+                    break;
+                case 'ArrowDown':
+                    if (dy === 0) { dx = 0; dy = GRID_SIZE; }
+                    break;
+                case 'ArrowLeft':
+                    if (dx === 0) { dx = -GRID_SIZE; dy = 0; }
+                    break;
+                case 'ArrowRight':
+                    if (dx === 0) { dx = GRID_SIZE; dy = 0; }
+                    break;
             }
         });
 
-        // Start game loop
         requestAnimationFrame(gameLoop);
     </script>
 </body>
