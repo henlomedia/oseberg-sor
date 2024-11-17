@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="no">
-<!-- [Previous head content remains the same] -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Snake Spill med Nils</title>
     <style>
-        /* Tidligere stiler beholdes og vi legger til nye for high score */
         body, html {
             margin: 0;
             padding: 0;
@@ -18,6 +16,7 @@
             justify-content: center;
             align-items: center;
             background: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
         canvas {
@@ -35,7 +34,6 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             color: rgba(0, 0, 0, 0.1);
             pointer-events: none;
             user-select: none;
@@ -44,7 +42,6 @@
             font-size: min(8vw, 60px);
         }
 
-        /* Nye stiler for high score */
         .highscore-input {
             position: fixed;
             top: 50%;
@@ -57,27 +54,43 @@
             display: none;
             z-index: 2;
             text-align: center;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            min-width: 280px;
+        }
+
+        .highscore-input h2 {
+            margin: 0 0 15px 0;
+            color: #1d1d1f;
         }
 
         .highscore-input input {
             margin: 10px 0;
-            padding: 8px;
+            padding: 12px;
             border: 1px solid #ccc;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
             width: 200px;
+            outline: none;
+        }
+
+        .highscore-input input:focus {
+            border-color: #007AFF;
+            box-shadow: 0 0 0 2px rgba(0,122,255,0.2);
         }
 
         .highscore-input button {
             background: #007AFF;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px 24px;
+            border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
             margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .highscore-input button:hover {
+            background: #0066CC;
         }
 
         .highscore-list {
@@ -85,11 +98,23 @@
             top: 10px;
             right: 10px;
             background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 8px;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             font-size: 14px;
             z-index: 1;
+            min-width: 150px;
+        }
+
+        .highscore-list h3 {
+            margin: 0 0 10px 0;
+            color: #1d1d1f;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        #scores {
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -107,10 +132,34 @@
     </div>
     <canvas id="gameCanvas"></canvas>
     <script>
-        // [Previous game code remains the same until the score handling]
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-        // High score handling
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const baseSize = Math.min(Math.floor(canvas.width / 25), Math.floor(canvas.height / 25));
+            GRID_SIZE = Math.floor(baseSize * 1.33);
+        }
+
+        let GRID_SIZE;
+        let snake = [];
+        let dx = 0;
+        let dy = 0;
+        let food = {x: 0, y: 0};
+        let score = 0;
+        let gameStarted = false;
+        let baconImage = new Image();
+        let snakeImage = new Image();
+        let gameSpeed = 180;
+        let lastUpdate = 0;
         let highScores = JSON.parse(localStorage.getItem('snakeHighScores')) || [];
+
+        baconImage.src = 'bacon.png';
+        snakeImage.src = 'nils.png';
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
         function updateHighScoreList() {
             const scoresDiv = document.getElementById('scores');
@@ -138,7 +187,8 @@
 
             highScores.push({
                 name: name,
-                score: score
+                score: score,
+                date: new Date().toISOString()
             });
 
             highScores.sort((a, b) => b.score - a.score);
@@ -152,7 +202,83 @@
             updateHighScoreList();
         }
 
-        // Oppdater gameOver funksjon
+        function createFood() {
+            const margin = GRID_SIZE;
+            const maxX = Math.floor((canvas.width - margin * 2) / GRID_SIZE);
+            const maxY = Math.floor((canvas.height - margin * 2) / GRID_SIZE);
+            
+            let newX, newY;
+            let validPosition = false;
+            
+            while (!validPosition) {
+                newX = (Math.floor(Math.random() * maxX) + 1) * GRID_SIZE;
+                newY = (Math.floor(Math.random() * maxY) + 1) * GRID_SIZE;
+                
+                validPosition = true;
+                for (let segment of snake) {
+                    if (segment.x === newX && segment.y === newY) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+                
+                if (newX >= canvas.width - GRID_SIZE || 
+                    newY >= canvas.height - GRID_SIZE ||
+                    newX < GRID_SIZE || 
+                    newY < GRID_SIZE) {
+                    validPosition = false;
+                }
+            }
+            
+            food.x = newX;
+            food.y = newY;
+        }
+
+        function drawBacon(x, y) {
+            if (baconImage.complete && baconImage.naturalHeight !== 0) {
+                ctx.drawImage(baconImage, x, y, GRID_SIZE, GRID_SIZE);
+            } else {
+                ctx.fillStyle = '#FFA07A';
+                ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
+            }
+        }
+
+        function drawSnake() {
+            snake.forEach((segment) => {
+                if (snakeImage.complete && snakeImage.naturalHeight !== 0) {
+                    ctx.drawImage(snakeImage, segment.x, segment.y, GRID_SIZE, GRID_SIZE);
+                } else {
+                    ctx.fillStyle = '#008000';
+                    ctx.fillRect(segment.x, segment.y, GRID_SIZE, GRID_SIZE);
+                }
+            });
+        }
+
+        function moveSnake() {
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+            
+            if (head.x >= canvas.width) head.x = 0;
+            if (head.x < 0) head.x = canvas.width - GRID_SIZE;
+            if (head.y >= canvas.height) head.y = 0;
+            if (head.y < 0) head.y = canvas.height - GRID_SIZE;
+
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    gameOver();
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                createFood();
+            } else {
+                snake.pop();
+            }
+        }
+
         function gameOver() {
             gameStarted = false;
             ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
@@ -169,17 +295,118 @@
             checkHighScore(score);
         }
 
-        // Last inn high scores ved start
-        updateHighScoreList();
+        function startGame() {
+            snake = [{
+                x: Math.floor(canvas.width / (2 * GRID_SIZE)) * GRID_SIZE,
+                y: Math.floor(canvas.height / (2 * GRID_SIZE)) * GRID_SIZE
+            }];
+            dx = GRID_SIZE;
+            dy = 0;
+            score = 0;
+            gameStarted = true;
+            createFood();
+            document.getElementById('highscoreInput').style.display = 'none';
+        }
 
-        // Legg til event listener for Enter-tasten på input-feltet
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+
+            if (!gameStarted) {
+                startGame();
+                return;
+            }
+
+            const touchX = touch.clientX;
+            const touchY = touch.clientY;
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            const deltaX = touchX - centerX;
+            const deltaY = touchY - centerY;
+            
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0 && dy !== 0) {
+                    dx = GRID_SIZE;
+                    dy = 0;
+                } else if (deltaX < 0 && dy !== 0) {
+                    dx = -GRID_SIZE;
+                    dy = 0;
+                }
+            } else {
+                if (deltaY > 0 && dx !== 0) {
+                    dx = 0;
+                    dy = GRID_SIZE;
+                } else if (deltaY < 0 && dx !== 0) {
+                    dx = 0;
+                    dy = -GRID_SIZE;
+                }
+            }
+        }
+
+        function gameLoop(timestamp) {
+            if (!lastUpdate) lastUpdate = timestamp;
+            
+            const elapsed = timestamp - lastUpdate;
+            
+            if (elapsed > gameSpeed) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                if (gameStarted) {
+                    moveSnake();
+                    drawSnake();
+                    drawBacon(food.x, food.y);
+                    
+                    ctx.fillStyle = '#1d1d1f';
+                    ctx.font = '20px -apple-system';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(`Poeng: ${score}`, 15, 30);
+                } else if (!gameStarted && score === 0) {
+                    ctx.fillStyle = '#1d1d1f';
+                    ctx.font = '30px -apple-system';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Trykk på skjermen for å starte', canvas.width / 2, canvas.height * 0.7);
+                }
+                
+                lastUpdate = timestamp;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        canvas.addEventListener('touchstart', handleTouch);
+
+        document.addEventListener('keydown', (e) => {
+            if (!gameStarted && e.code === 'Space') {
+                startGame();
+                return;
+            }
+
+            switch (e.code) {
+                case 'ArrowUp':
+                    if (dy === 0) { dx = 0; dy = -GRID_SIZE; }
+                    break;
+                case 'ArrowDown':
+                    if (dy === 0) { dx = 0; dy = GRID_SIZE; }
+                    break;
+                case 'ArrowLeft':
+                    if (dx === 0) { dx = -GRID_SIZE; dy = 0; }
+                    break;
+                case 'ArrowRight':
+                    if (dx === 0) { dx = GRID_SIZE; dy = 0; }
+                    break;
+            }
+        });
+
         document.getElementById('nameInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 saveHighScore();
             }
         });
 
-        // [Rest of the game code remains the same]
+        updateHighScoreList();
+        requestAnimationFrame(gameLoop);
     </script>
 </body>
 </html>
