@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="no">
+<!-- [Head-seksjonen forblir uendret] -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,11 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
     <link rel="apple-touch-icon" href="/android-chrome-192x192.png">
+    <meta name="theme-color" content="#ffffff">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Operatørrunde">
     
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
@@ -17,34 +23,6 @@
         body { background-color: #f9fafb; }
         button { min-height: 44px; }
         input[type="checkbox"] { width: 1.2rem; height: 1.2rem; }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            margin: 1rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        @media (max-width: 640px) {
-            .modal-content {
-                padding: 1.25rem;
-                margin: 0.75rem;
-            }
-        }
     </style>
 </head>
 <body>
@@ -56,72 +34,28 @@
                 className: `px-4 py-2 rounded text-white font-medium ${className}`
             }, children);
 
-        const Modal = ({ isOpen, onClose, title, content }) => {
-            if (!isOpen) return null;
-            
-            const contentLines = content.split('\n');
-            
-            return React.createElement('div', { 
-                className: 'modal-overlay',
-                onClick: onClose
-            },
-                React.createElement('div', { 
-                    className: 'modal-content max-w-sm mx-auto w-11/12 sm:max-w-md md:max-w-lg',
-                    onClick: e => e.stopPropagation()
-                },
-                    React.createElement('button', {
-                        className: 'absolute top-4 right-4 text-gray-600 hover:text-gray-800 text-2xl',
-                        onClick: onClose
-                    }, '×'),
-                    React.createElement('h2', { 
-                        className: 'text-lg sm:text-xl font-bold mb-4 pr-8' 
-                    }, `Punkt ${title}`),
-                    React.createElement('div', { 
-                        className: 'space-y-2 text-base sm:text-lg' 
-                    },
-                        contentLines.map((line, index) => 
-                            React.createElement('p', { 
-                                key: index,
-                                className: 'leading-relaxed'
-                            }, line)
-                        )
-                    )
-                )
-            );
-        };
-
-        const Checkbox = ({ id, checked, onChange, label, onInfoClick, hasInfo }) =>
-            React.createElement('div', { 
-                className: 'flex items-center justify-between space-x-3 py-1 w-full'
-            },
-                React.createElement('div', {
-                    className: 'flex items-center space-x-3 flex-grow'
-                },
-                    React.createElement('input', {
-                        type: 'checkbox',
-                        id,
-                        checked,
-                        onChange: (e) => onChange(e.target.checked),
-                        className: 'mt-0'
-                    }),
-                    React.createElement('label', {
-                        htmlFor: id,
-                        className: checked ? 'line-through text-gray-500' : 'text-gray-900'
-                    }, label)
-                ),
-                hasInfo && React.createElement('button', {
-                    onClick: onInfoClick,
-                    className: 'text-blue-600 hover:text-blue-800 text-sm px-2 py-1 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500',
-                }, 'Mer info')
+        const Checkbox = ({ id, checked, onChange, label }) =>
+            React.createElement('div', { className: 'flex items-start space-x-3 py-1' },
+                React.createElement('input', {
+                    type: 'checkbox',
+                    id,
+                    checked,
+                    onChange: (e) => onChange(e.target.checked),
+                    className: 'mt-1'
+                }),
+                React.createElement('label', {
+                    htmlFor: id,
+                    className: checked ? 'line-through text-gray-500' : 'text-gray-900'
+                }, label)
             );
 
         const App = () => {
+            // [State og effekter forblir uendret]
             const [tasks, setTasks] = React.useState(null);
             const [currentScreen, setCurrentScreen] = React.useState('welcome');
             const [selectedArea, setSelectedArea] = React.useState(null);
-            const [isModalOpen, setIsModalOpen] = React.useState(false);
-            const [modalContent, setModalContent] = React.useState({ title: '', content: '' });
 
+            // Last inn tasks fra CSV ved oppstart
             React.useEffect(() => {
                 const savedTasks = localStorage.getItem('osebergTasks');
                 if (savedTasks) {
@@ -148,11 +82,7 @@
                             parsedTasks[row.area][row.category].push({
                                 id: parseInt(row.taskId),
                                 description: row.description,
-                                completed: false,
-                                info: {
-                                    title: row.taskId,
-                                    content: row.infoContent
-                                }
+                                completed: false
                             });
                         });
 
@@ -169,6 +99,11 @@
                 setCurrentScreen('tasks');
             };
 
+            const goToSnakeGame = () => {
+                window.location.href = 'snake.html';
+            };
+
+            // [Andre funksjoner forblir uendret]
             const toggleTask = (area, category, id) => {
                 const newTasks = {
                     ...tasks,
@@ -181,11 +116,6 @@
                 };
                 setTasks(newTasks);
                 localStorage.setItem('osebergTasks', JSON.stringify(newTasks));
-            };
-
-            const showTaskInfo = (info) => {
-                setModalContent(info);
-                setIsModalOpen(true);
             };
 
             const resetTasks = (area) => {
@@ -226,6 +156,7 @@
                 }, 'Laster...');
             }
 
+            // Welcome screen - nå med Snake-spill knapp
             if (currentScreen === 'welcome') {
                 return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
                     React.createElement('div', { className: 'space-y-6' },
@@ -257,11 +188,16 @@
                         React.createElement(Button, {
                             onClick: resetAllTasks,
                             className: 'w-full bg-red-600 hover:bg-red-700 mb-4'
-                        }, 'Tilbakestill alle oppgaver')
+                        }, 'Tilbakestill alle oppgaver'),
+                        React.createElement('button', {
+                            onClick: goToSnakeGame,
+                            className: 'w-full bg-white text-black border-2 border-black rounded px-4 py-2 font-medium hover:bg-gray-100'
+                        }, 'Flesk og duppe spillet')
                     )
                 );
             }
 
+            // Tasks screen - nå uten Snake-spill knapp
             return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
                 React.createElement('div', { className: 'space-y-4' },
                     React.createElement('div', { className: 'flex items-center justify-between' },
@@ -282,9 +218,7 @@
                                     id: `${selectedArea}-${category}-${task.id}`,
                                     checked: task.completed,
                                     onChange: () => toggleTask(selectedArea, category, task.id),
-                                    label: task.description,
-                                    hasInfo: !!task.info,
-                                    onInfoClick: () => showTaskInfo(task.info)
+                                    label: task.description
                                 })
                             )
                         )
@@ -293,16 +227,11 @@
                         onClick: () => resetTasks(selectedArea),
                         className: 'w-full bg-yellow-600 hover:bg-yellow-700'
                     }, `Tilbakestill oppgaver for ${selectedArea}`)
-                ),
-                React.createElement(Modal, {
-                    isOpen: isModalOpen,
-                    onClose: () => setIsModalOpen(false),
-                    title: modalContent.title,
-                    content: modalContent.content
-                })
+                )
             );
         };
 
+        // Start appen
         ReactDOM.render(
             React.createElement(App),
             document.getElementById('root')
