@@ -54,7 +54,7 @@
                 className: `px-4 py-2 rounded text-white font-medium ${className}`
             }, children);
 
-        const Modal = ({ isOpen, onClose, children }) => {
+        const Modal = ({ isOpen, onClose, title, content }) => {
             if (!isOpen) return null;
             
             return React.createElement('div', { 
@@ -66,15 +66,20 @@
                     onClick: e => e.stopPropagation()
                 },
                     React.createElement('button', {
-                        className: 'absolute top-2 right-2 text-gray-600 hover:text-gray-800',
+                        className: 'absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-xl',
                         onClick: onClose
                     }, '×'),
-                    children
+                    React.createElement('h2', { 
+                        className: 'text-xl font-bold mb-4' 
+                    }, title),
+                    React.createElement('div', { 
+                        className: 'space-y-2' 
+                    }, content)
                 )
             );
         };
 
-        const Checkbox = ({ id, checked, onChange, label }) =>
+        const Checkbox = ({ id, checked, onChange, label, onInfoClick, hasInfo }) =>
             React.createElement('div', { className: 'flex items-start space-x-3 py-1' },
                 React.createElement('input', {
                     type: 'checkbox',
@@ -85,8 +90,12 @@
                 }),
                 React.createElement('label', {
                     htmlFor: id,
-                    className: checked ? 'line-through text-gray-500' : 'text-gray-900'
-                }, label)
+                    className: checked ? 'line-through text-gray-500 flex-grow' : 'text-gray-900 flex-grow'
+                }, label),
+                hasInfo && React.createElement('button', {
+                    onClick: onInfoClick,
+                    className: 'text-blue-600 hover:text-blue-800 text-sm px-2',
+                }, 'Mer info')
             );
 
         const App = () => {
@@ -94,17 +103,9 @@
             const [currentScreen, setCurrentScreen] = React.useState('welcome');
             const [selectedArea, setSelectedArea] = React.useState(null);
             const [isModalOpen, setIsModalOpen] = React.useState(false);
-            const [infoContent, setInfoContent] = React.useState({
-                title: 'Informasjon om operatørrunder',
-                content: [
-                    'Sjekk følgende på runden:',
-                    '• Kontroller for unormal støy eller vibrasjon',
-                    '• Se etter lekkasjer fra utstyr',
-                    '• Sjekk temperatur på utstyr',
-                    '• Rapporter avvik umiddelbart'
-                ]
-            });
+            const [modalContent, setModalContent] = React.useState({ title: '', content: '' });
 
+            // Simulated task data with info content
             React.useEffect(() => {
                 const savedTasks = localStorage.getItem('osebergTasks');
                 if (savedTasks) {
@@ -112,32 +113,46 @@
                     return;
                 }
 
-                fetch('tasks.csv')
-                    .then(response => response.text())
-                    .then(csv => {
-                        const results = Papa.parse(csv, {
-                            header: true,
-                            skipEmptyLines: true
-                        });
-                        
-                        const parsedTasks = {};
-                        results.data.forEach(row => {
-                            if (!parsedTasks[row.area]) {
-                                parsedTasks[row.area] = {};
+                // Simulated data - replace with actual CSV parsing
+                const dummyTasks = {
+                    'W21': {
+                        'Pumper': [
+                            {
+                                id: 1,
+                                description: 'Sjekk pumpe P-101',
+                                completed: false,
+                                info: {
+                                    title: 'Pumpe P-101 Info',
+                                    content: 'Kontroller for unormal støy og vibrasjon. Normal driftstemperatur er 50-60°C. Ved avvik, kontakt vedlikeholdsavdeling.'
+                                }
+                            },
+                            {
+                                id: 2,
+                                description: 'Inspiser pumpe P-102',
+                                completed: false,
+                                info: {
+                                    title: 'Pumpe P-102 Info',
+                                    content: 'Sjekk for lekkasjer rundt pakninger. Oljenivå skal være synlig i sikteglass. Rapporter om unormal temperatur.'
+                                }
                             }
-                            if (!parsedTasks[row.area][row.category]) {
-                                parsedTasks[row.area][row.category] = [];
+                        ],
+                        'Ventiler': [
+                            {
+                                id: 3,
+                                description: 'Kontroller ventil V-201',
+                                completed: false,
+                                info: {
+                                    title: 'Ventil V-201 Info',
+                                    content: 'Verifiser at ventilen opererer fritt. Sjekk for lekkasjer rundt spindel. Noter eventuell korrosjon.'
+                                }
                             }
-                            parsedTasks[row.area][row.category].push({
-                                id: parseInt(row.taskId),
-                                description: row.description,
-                                completed: false
-                            });
-                        });
+                        ]
+                    }
+                    // Add more areas as needed
+                };
 
-                        setTasks(parsedTasks);
-                        localStorage.setItem('osebergTasks', JSON.stringify(parsedTasks));
-                    });
+                setTasks(dummyTasks);
+                localStorage.setItem('osebergTasks', JSON.stringify(dummyTasks));
             }, []);
 
             const areasOppe = ['W21', 'P21/Mezz', 'C22', 'P22', 'P23/Mezz', 'Boligkvarter'];
@@ -160,6 +175,11 @@
                 };
                 setTasks(newTasks);
                 localStorage.setItem('osebergTasks', JSON.stringify(newTasks));
+            };
+
+            const showTaskInfo = (info) => {
+                setModalContent(info);
+                setIsModalOpen(true);
             };
 
             const resetTasks = (area) => {
@@ -200,26 +220,9 @@
                 }, 'Laster...');
             }
 
-            // Info Modal
-            const infoModal = React.createElement(Modal, {
-                isOpen: isModalOpen,
-                onClose: () => setIsModalOpen(false)
-            },
-                React.createElement('h2', { 
-                    className: 'text-xl font-bold mb-4' 
-                }, infoContent.title),
-                React.createElement('div', { 
-                    className: 'space-y-2' 
-                },
-                    ...infoContent.content.map((text, index) =>
-                        React.createElement('p', { key: index }, text)
-                    )
-                )
-            );
-
             // Welcome screen
             if (currentScreen === 'welcome') {
-                return React.createElement('div', { className: 'p-4 max-w-md mx-auto relative min-h-screen' },
+                return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
                     React.createElement('div', { className: 'space-y-6' },
                         React.createElement('h1', { className: 'text-2xl font-bold' }, 'Oseberg Sør'),
                         React.createElement('div', { className: 'p-4 bg-blue-100 rounded-lg' },
@@ -250,17 +253,12 @@
                             onClick: resetAllTasks,
                             className: 'w-full bg-red-600 hover:bg-red-700 mb-4'
                         }, 'Tilbakestill alle oppgaver')
-                    ),
-                    React.createElement('button', {
-                        className: 'absolute bottom-4 right-4 text-blue-600 hover:text-blue-800 font-medium',
-                        onClick: () => setIsModalOpen(true)
-                    }, 'Mer info'),
-                    infoModal
+                    )
                 );
             }
 
             // Tasks screen
-            return React.createElement('div', { className: 'p-4 max-w-md mx-auto relative min-h-screen' },
+            return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
                 React.createElement('div', { className: 'space-y-4' },
                     React.createElement('div', { className: 'flex items-center justify-between' },
                         React.createElement(Button, {
@@ -280,7 +278,9 @@
                                     id: `${selectedArea}-${category}-${task.id}`,
                                     checked: task.completed,
                                     onChange: () => toggleTask(selectedArea, category, task.id),
-                                    label: task.description
+                                    label: task.description,
+                                    hasInfo: !!task.info,
+                                    onInfoClick: () => showTaskInfo(task.info)
                                 })
                             )
                         )
@@ -290,11 +290,12 @@
                         className: 'w-full bg-yellow-600 hover:bg-yellow-700'
                     }, `Tilbakestill oppgaver for ${selectedArea}`)
                 ),
-                React.createElement('button', {
-                    className: 'absolute bottom-4 right-4 text-blue-600 hover:text-blue-800 font-medium',
-                    onClick: () => setIsModalOpen(true)
-                }, 'Mer info'),
-                infoModal
+                React.createElement(Modal, {
+                    isOpen: isModalOpen,
+                    onClose: () => setIsModalOpen(false),
+                    title: modalContent.title,
+                    content: modalContent.content
+                })
             );
         };
 
