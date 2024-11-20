@@ -31,12 +31,19 @@
         }
         .modal-content {
             background: white;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 0.5rem;
-            max-width: 90%;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
+            margin: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        @media (max-width: 640px) {
+            .modal-content {
+                padding: 1.25rem;
+                margin: 0.75rem;
+            }
         }
     </style>
 </head>
@@ -52,24 +59,33 @@
         const Modal = ({ isOpen, onClose, title, content }) => {
             if (!isOpen) return null;
             
+            const contentLines = content.split('\n');
+            
             return React.createElement('div', { 
                 className: 'modal-overlay',
                 onClick: onClose
             },
                 React.createElement('div', { 
-                    className: 'modal-content',
+                    className: 'modal-content max-w-sm mx-auto w-11/12 sm:max-w-md md:max-w-lg',
                     onClick: e => e.stopPropagation()
                 },
                     React.createElement('button', {
-                        className: 'absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-xl',
+                        className: 'absolute top-4 right-4 text-gray-600 hover:text-gray-800 text-2xl',
                         onClick: onClose
                     }, '×'),
                     React.createElement('h2', { 
-                        className: 'text-xl font-bold mb-4' 
-                    }, title),
+                        className: 'text-lg sm:text-xl font-bold mb-4 pr-8' 
+                    }, `Punkt ${title}`),
                     React.createElement('div', { 
-                        className: 'space-y-2' 
-                    }, content)
+                        className: 'space-y-2 text-base sm:text-lg' 
+                    },
+                        contentLines.map((line, index) => 
+                            React.createElement('p', { 
+                                key: index,
+                                className: 'leading-relaxed'
+                            }, line)
+                        )
+                    )
                 )
             );
         };
@@ -95,7 +111,7 @@
                 ),
                 hasInfo && React.createElement('button', {
                     onClick: onInfoClick,
-                    className: 'text-blue-600 hover:text-blue-800 text-sm whitespace-nowrap',
+                    className: 'text-blue-600 hover:text-blue-800 text-sm px-2 py-1 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500',
                 }, 'Mer info')
             );
 
@@ -134,7 +150,7 @@
                                 description: row.description,
                                 completed: false,
                                 info: {
-                                    title: row.infoTitle,
+                                    title: row.taskId,
                                     content: row.infoContent
                                 }
                             });
