@@ -113,35 +113,36 @@
                     return;
                 }
 
-                const dummyTasks = {
-                    'W21': {
-                        'Dieselpumper': [
-                            {
-                                id: 1,
-                                description: 'Sjekk oljenivå',
+                fetch('tasks.csv')
+                    .then(response => response.text())
+                    .then(csv => {
+                        const results = Papa.parse(csv, {
+                            header: true,
+                            skipEmptyLines: true
+                        });
+                        
+                        const parsedTasks = {};
+                        results.data.forEach(row => {
+                            if (!parsedTasks[row.area]) {
+                                parsedTasks[row.area] = {};
+                            }
+                            if (!parsedTasks[row.area][row.category]) {
+                                parsedTasks[row.area][row.category] = [];
+                            }
+                            parsedTasks[row.area][row.category].push({
+                                id: parseInt(row.taskId),
+                                description: row.description,
                                 completed: false,
                                 info: {
-                                    title: 'Oljenivå sjekk',
-                                    content: 'Oljenivået skal være mellom min og max merket på målestaven. Bruk korrekt oljetype: SAE 15W-40. Ved lavt nivå, etterfyll og rapporter.'
+                                    title: row.infoTitle,
+                                    content: row.infoContent
                                 }
-                            }
-                        ],
-                        'Brannkanoner': [
-                            {
-                                id: 2,
-                                description: 'Sjekk at de står i riktig retning',
-                                completed: false,
-                                info: {
-                                    title: 'Brannkanon posisjon',
-                                    content: 'Brannkanonene skal peke i standard posisjon: 45 grader oppover og rettet mot hovedprosessområdet. Sjekk at låsemekanismen er aktivert.'
-                                }
-                            }
-                        ]
-                    }
-                };
+                            });
+                        });
 
-                setTasks(dummyTasks);
-                localStorage.setItem('osebergTasks', JSON.stringify(dummyTasks));
+                        setTasks(parsedTasks);
+                        localStorage.setItem('osebergTasks', JSON.stringify(parsedTasks));
+                    });
             }, []);
 
             const areasOppe = ['W21', 'P21/Mezz', 'C22', 'P22', 'P23/Mezz', 'Boligkvarter'];
