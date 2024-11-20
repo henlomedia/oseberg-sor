@@ -8,11 +8,6 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
     <link rel="apple-touch-icon" href="/android-chrome-192x192.png">
-    <meta name="theme-color" content="#ffffff">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Operatørrunde">
     
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
@@ -80,21 +75,27 @@
         };
 
         const Checkbox = ({ id, checked, onChange, label, onInfoClick, hasInfo }) =>
-            React.createElement('div', { className: 'flex items-start space-x-3 py-1' },
-                React.createElement('input', {
-                    type: 'checkbox',
-                    id,
-                    checked,
-                    onChange: (e) => onChange(e.target.checked),
-                    className: 'mt-1'
-                }),
-                React.createElement('label', {
-                    htmlFor: id,
-                    className: checked ? 'line-through text-gray-500 flex-grow' : 'text-gray-900 flex-grow'
-                }, label),
+            React.createElement('div', { 
+                className: 'flex items-center justify-between space-x-3 py-1 w-full'
+            },
+                React.createElement('div', {
+                    className: 'flex items-center space-x-3 flex-grow'
+                },
+                    React.createElement('input', {
+                        type: 'checkbox',
+                        id,
+                        checked,
+                        onChange: (e) => onChange(e.target.checked),
+                        className: 'mt-0'
+                    }),
+                    React.createElement('label', {
+                        htmlFor: id,
+                        className: checked ? 'line-through text-gray-500' : 'text-gray-900'
+                    }, label)
+                ),
                 hasInfo && React.createElement('button', {
                     onClick: onInfoClick,
-                    className: 'text-blue-600 hover:text-blue-800 text-sm px-2',
+                    className: 'text-blue-600 hover:text-blue-800 text-sm whitespace-nowrap',
                 }, 'Mer info')
             );
 
@@ -105,7 +106,6 @@
             const [isModalOpen, setIsModalOpen] = React.useState(false);
             const [modalContent, setModalContent] = React.useState({ title: '', content: '' });
 
-            // Simulated task data with info content
             React.useEffect(() => {
                 const savedTasks = localStorage.getItem('osebergTasks');
                 if (savedTasks) {
@@ -113,42 +113,31 @@
                     return;
                 }
 
-                // Simulated data - replace with actual CSV parsing
                 const dummyTasks = {
                     'W21': {
-                        'Pumper': [
+                        'Dieselpumper': [
                             {
                                 id: 1,
-                                description: 'Sjekk pumpe P-101',
+                                description: 'Sjekk oljenivå',
                                 completed: false,
                                 info: {
-                                    title: 'Pumpe P-101 Info',
-                                    content: 'Kontroller for unormal støy og vibrasjon. Normal driftstemperatur er 50-60°C. Ved avvik, kontakt vedlikeholdsavdeling.'
-                                }
-                            },
-                            {
-                                id: 2,
-                                description: 'Inspiser pumpe P-102',
-                                completed: false,
-                                info: {
-                                    title: 'Pumpe P-102 Info',
-                                    content: 'Sjekk for lekkasjer rundt pakninger. Oljenivå skal være synlig i sikteglass. Rapporter om unormal temperatur.'
+                                    title: 'Oljenivå sjekk',
+                                    content: 'Oljenivået skal være mellom min og max merket på målestaven. Bruk korrekt oljetype: SAE 15W-40. Ved lavt nivå, etterfyll og rapporter.'
                                 }
                             }
                         ],
-                        'Ventiler': [
+                        'Brannkanoner': [
                             {
-                                id: 3,
-                                description: 'Kontroller ventil V-201',
+                                id: 2,
+                                description: 'Sjekk at de står i riktig retning',
                                 completed: false,
                                 info: {
-                                    title: 'Ventil V-201 Info',
-                                    content: 'Verifiser at ventilen opererer fritt. Sjekk for lekkasjer rundt spindel. Noter eventuell korrosjon.'
+                                    title: 'Brannkanon posisjon',
+                                    content: 'Brannkanonene skal peke i standard posisjon: 45 grader oppover og rettet mot hovedprosessområdet. Sjekk at låsemekanismen er aktivert.'
                                 }
                             }
                         ]
                     }
-                    // Add more areas as needed
                 };
 
                 setTasks(dummyTasks);
@@ -220,7 +209,6 @@
                 }, 'Laster...');
             }
 
-            // Welcome screen
             if (currentScreen === 'welcome') {
                 return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
                     React.createElement('div', { className: 'space-y-6' },
@@ -257,7 +245,6 @@
                 );
             }
 
-            // Tasks screen
             return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
                 React.createElement('div', { className: 'space-y-4' },
                     React.createElement('div', { className: 'flex items-center justify-between' },
