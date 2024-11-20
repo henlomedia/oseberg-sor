@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="no">
-<!-- [Head-seksjonen forblir uendret] -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,6 +22,27 @@
         body { background-color: #f9fafb; }
         button { min-height: 44px; }
         input[type="checkbox"] { width: 1.2rem; height: 1.2rem; }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -33,6 +53,26 @@
                 onClick,
                 className: `px-4 py-2 rounded text-white font-medium ${className}`
             }, children);
+
+        const Modal = ({ isOpen, onClose, children }) => {
+            if (!isOpen) return null;
+            
+            return React.createElement('div', { 
+                className: 'modal-overlay',
+                onClick: onClose
+            },
+                React.createElement('div', { 
+                    className: 'modal-content',
+                    onClick: e => e.stopPropagation()
+                },
+                    React.createElement('button', {
+                        className: 'absolute top-2 right-2 text-gray-600 hover:text-gray-800',
+                        onClick: onClose
+                    }, '×'),
+                    children
+                )
+            );
+        };
 
         const Checkbox = ({ id, checked, onChange, label }) =>
             React.createElement('div', { className: 'flex items-start space-x-3 py-1' },
@@ -50,12 +90,21 @@
             );
 
         const App = () => {
-            // [State og effekter forblir uendret]
             const [tasks, setTasks] = React.useState(null);
             const [currentScreen, setCurrentScreen] = React.useState('welcome');
             const [selectedArea, setSelectedArea] = React.useState(null);
+            const [isModalOpen, setIsModalOpen] = React.useState(false);
+            const [infoContent, setInfoContent] = React.useState({
+                title: 'Informasjon om operatørrunder',
+                content: [
+                    'Sjekk følgende på runden:',
+                    '• Kontroller for unormal støy eller vibrasjon',
+                    '• Se etter lekkasjer fra utstyr',
+                    '• Sjekk temperatur på utstyr',
+                    '• Rapporter avvik umiddelbart'
+                ]
+            });
 
-            // Last inn tasks fra CSV ved oppstart
             React.useEffect(() => {
                 const savedTasks = localStorage.getItem('osebergTasks');
                 if (savedTasks) {
@@ -99,11 +148,6 @@
                 setCurrentScreen('tasks');
             };
 
-            const goToSnakeGame = () => {
-                window.location.href = 'snake.html';
-            };
-
-            // [Andre funksjoner forblir uendret]
             const toggleTask = (area, category, id) => {
                 const newTasks = {
                     ...tasks,
@@ -156,9 +200,26 @@
                 }, 'Laster...');
             }
 
-            // Welcome screen - nå med Snake-spill knapp
+            // Info Modal
+            const infoModal = React.createElement(Modal, {
+                isOpen: isModalOpen,
+                onClose: () => setIsModalOpen(false)
+            },
+                React.createElement('h2', { 
+                    className: 'text-xl font-bold mb-4' 
+                }, infoContent.title),
+                React.createElement('div', { 
+                    className: 'space-y-2' 
+                },
+                    ...infoContent.content.map((text, index) =>
+                        React.createElement('p', { key: index }, text)
+                    )
+                )
+            );
+
+            // Welcome screen
             if (currentScreen === 'welcome') {
-                return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
+                return React.createElement('div', { className: 'p-4 max-w-md mx-auto relative min-h-screen' },
                     React.createElement('div', { className: 'space-y-6' },
                         React.createElement('h1', { className: 'text-2xl font-bold' }, 'Oseberg Sør'),
                         React.createElement('div', { className: 'p-4 bg-blue-100 rounded-lg' },
@@ -188,17 +249,18 @@
                         React.createElement(Button, {
                             onClick: resetAllTasks,
                             className: 'w-full bg-red-600 hover:bg-red-700 mb-4'
-                        }, 'Tilbakestill alle oppgaver'),
-                        React.createElement('button', {
-                            onClick: goToSnakeGame,
-                            className: 'w-full bg-white text-black border-2 border-black rounded px-4 py-2 font-medium hover:bg-gray-100'
-                        }, 'Flesk og duppe spillet')
-                    )
+                        }, 'Tilbakestill alle oppgaver')
+                    ),
+                    React.createElement('button', {
+                        className: 'absolute bottom-4 right-4 text-blue-600 hover:text-blue-800 font-medium',
+                        onClick: () => setIsModalOpen(true)
+                    }, 'Mer info'),
+                    infoModal
                 );
             }
 
-            // Tasks screen - nå uten Snake-spill knapp
-            return React.createElement('div', { className: 'p-4 max-w-md mx-auto' },
+            // Tasks screen
+            return React.createElement('div', { className: 'p-4 max-w-md mx-auto relative min-h-screen' },
                 React.createElement('div', { className: 'space-y-4' },
                     React.createElement('div', { className: 'flex items-center justify-between' },
                         React.createElement(Button, {
@@ -227,11 +289,15 @@
                         onClick: () => resetTasks(selectedArea),
                         className: 'w-full bg-yellow-600 hover:bg-yellow-700'
                     }, `Tilbakestill oppgaver for ${selectedArea}`)
-                )
+                ),
+                React.createElement('button', {
+                    className: 'absolute bottom-4 right-4 text-blue-600 hover:text-blue-800 font-medium',
+                    onClick: () => setIsModalOpen(true)
+                }, 'Mer info'),
+                infoModal
             );
         };
 
-        // Start appen
         ReactDOM.render(
             React.createElement(App),
             document.getElementById('root')
