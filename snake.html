@@ -455,6 +455,9 @@
         canvas.addEventListener('touchstart', handleTouch);
 
         document.addEventListener('keydown', (e) => {
+            // Prevent the page from scrolling when using the arrow keys
+            e.preventDefault();
+
             if (document.getElementById('highscoreInput').style.display === 'flex') {
                 if (e.key === 'Enter') {
                     saveHighScore();
