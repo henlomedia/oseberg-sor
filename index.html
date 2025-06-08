@@ -68,7 +68,8 @@
                     .then(csv => {
                         const results = Papa.parse(csv, {
                             header: true,
-                            skipEmptyLines: true
+                            skipEmptyLines: true,
+                            delimiter: ';'
                         });
                         
                         const parsedTasks = {};
